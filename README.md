@@ -1,0 +1,1 @@
+# Named_Pipes_diseaseAggregator
