@@ -1,0 +1,8 @@
+2 ENTER PhjCmQWSiacVy yguGjSJKWmTvE Cancer 25
+2 ENTER jqDnBiMufvzXA wKiUzYsgqiEZX Cancer 100
+2 ENTER YbVrCvWcxmXTj VsApAXYYvUPsJ Covid 82
+2 ENTER aCYzNPlbzMKCz ijJVRilLWMizj Mpampis 62
+2 EXIT PEvbGVAKVSkGx OPVchSWAFHtEe Mpampis 12
+2 EXIT douBpCaYVCEcm bMJOelVHSEhwR Cancer 62
+2 ENTER aDAonPRBmtvDD nrMzSZHRqXgtj Covid 112
+2 ENTER mwNPROTfiBilG drhXElPGTjrUm Cancer 108

@@ -1,0 +1,8 @@
+2 ENTER vtMeiOPBzhsLP yKAgnCqOoXUzl Covid 9
+2 ENTER dwloXPXblLGRx tOjNFcPNiDpNY Ebola 117
+2 ENTER rclwyvvYIXqTL tdlweHoXgtWwL Covid 6
+2 ENTER PSGpwBmtWTrwC VrOrlrGlOrlvo Mpampis 13
+2 EXIT yZGlsPhucatNV tghQiQjCalrOz Covid 49
+2 ENTER xbdmZUmrfdvJM ZrWINhzKLyNxL Ebola 54
+2 EXIT SAsgnOlCwDdrJ XYiQydApNceQr Mpampis 116
+2 EXIT gTjhaxfeXcIcJ XJNjDiBDSafXr Ebola 0

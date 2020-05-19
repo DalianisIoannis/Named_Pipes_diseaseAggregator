@@ -1,0 +1,8 @@
+2 ENTER GnEzkncAKKktg SbkfRXwAoMyhj Mpampis 60
+2 ENTER gwKQUvzvHdQiv SgKeVZrDGQfyB Ebola 9
+2 ENTER iZZdjOpGpQHpi EWTqAQsrUaRUu Ebola 111
+2 EXIT gxpoyqIFTVJrV pobwGJDnylHhS Cancer 41
+2 EXIT WAPjzLdZxehCh UPwhXLbGYprGX Ebola 88
+2 EXIT rSGGFSQrTVaXL pBqKTjMbpQPMu Cancer 98
+2 ENTER ZVboLvLlqfeXK VfnUTVNPLmWUF Mpampis 69
+2 ENTER iJbxTHgXCdZav pqjLIZzYFBcgY Mpampis 82

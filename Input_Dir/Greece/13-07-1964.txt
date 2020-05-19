@@ -1,0 +1,8 @@
+2 ENTER WQLFXRboYJhXv cPQSeKBSxTCCF Ebola 115
+2 ENTER kQHxoSwuZCnuX ZlyoVuoCrSlKV Ebola 35
+2 ENTER IovwyuAyujfeA UaRprRcfuERwo Cancer 93
+2 ENTER ieUgJVToYyAZm eldEIPjJFuDKm Covid 63
+2 ENTER YJMGCuSKeOvXt bMuQzJflmfjJA Covid 58
+2 EXIT BrlPGSkNjLcPB oujUAbVKvnVVI Covid 8
+2 ENTER hXPGJNYJLBRou bZvldVYbFpsmu Covid 88
+2 ENTER DSUDsgZtoLJWO wbzlKefexVEHV Ebola 109

@@ -1,0 +1,8 @@
+2 EXIT QLqiIpEzjNEob dTiyjZpKoXHcR Cancer 56
+2 ENTER hTfJGEhntUbqs rbhAXjTEevhSi Cancer 110
+2 ENTER bFjBLSNPezNdG hEloTECNHxydO Covid 118
+2 ENTER quNFMCldDWwSe tohPvQIrFTrDi Covid 75
+2 ENTER sNRFQFlrOJRTg cLRmSMrmeHVXu Mpampis 67
+2 ENTER jvguJwMRuyFSk CoQkzfUokNgMR Covid 64
+2 ENTER WCszGZgbvFSbl NHwLIsXaRBjaB Ebola 8
+2 EXIT TOiSDDyGompOB XnSZQgTHJfALH Ebola 37

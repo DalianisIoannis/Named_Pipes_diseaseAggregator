@@ -1,0 +1,8 @@
+2 ENTER PNDRFcHTSJSPu HFQDvTefptCuM Cancer 33
+2 ENTER yNYZyJCKhgmwK orxCWjhkddIyH Covid 80
+2 ENTER EisQfWmTflWGc gTXAoTDOLBCnZ Covid 99
+2 EXIT jytdfaedkVxnc ytiEMlOXLHWXd Cancer 13
+2 ENTER OkqslhIwMQjzO NwNqQcEmsEhkA Cancer 10
+2 ENTER mnqUFWOgfjFJj XiXxMumHJsvrh Covid 113
+2 ENTER CraJXhUTTLmog LwYUvTzGjOvIQ Covid 30
+2 ENTER kypqrPlIcwbUX lbaNdskbTrsGN Ebola 96

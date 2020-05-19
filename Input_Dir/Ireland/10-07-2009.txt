@@ -1,0 +1,8 @@
+2 EXIT uZMsADxrhPCBF eSrjyeNUZvASs Covid 108
+2 EXIT SrHVkPNsfOZnz UzvNWBOZOMbOe Covid 18
+2 EXIT AnuCJuviafYZe ASzNpcQaGwYNe Covid 31
+2 ENTER SaeJyxdAnlaJp tCXCTijJVsBNJ Ebola 48
+2 ENTER GBRnphSStHSDi FuXeCUPwRykAh Ebola 7
+2 ENTER IzKCoxABOOpfK QEtdUxuDPwBWW Ebola 77
+2 ENTER xtcEAIkKRCATH QxpHeypAYXlHE Ebola 48
+2 ENTER lZkYaAvFqCFNz LQKRvvGSkdTgf Cancer 58

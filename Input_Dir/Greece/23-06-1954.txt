@@ -1,0 +1,8 @@
+2 ENTER aUBpQsFAWozVQ BJWKEfpIMnMgh Mpampis 10
+2 EXIT kcTlGTnIhDXws zBCRjOKMoGSWe Mpampis 35
+2 ENTER dhcwqJaSMiXUG zoZtHMlwznVRQ Cancer 74
+2 ENTER eeBefLZwqKlHQ LqCADyuTDgdaH Cancer 72
+2 ENTER aNbXWwmQDatPa AkGpQilxtbqKD Cancer 66
+2 ENTER VpyCqUZruilFf WaKYtYcQCjeUb Mpampis 70
+2 ENTER uzzFfjBixmavw XhDIJCUUDkzMZ Cancer 108
+2 EXIT aYXGJTRXXPYIs ETtSGkzvsvzsw Covid 60
