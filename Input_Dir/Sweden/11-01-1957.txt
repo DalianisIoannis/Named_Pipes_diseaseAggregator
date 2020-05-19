@@ -1,8 +1,0 @@
-2 ENTER naYkjczyPWfHh dEdaZzbFYtrCB Ebola 113
-2 EXIT BeEkeEpDuNTrP IWhjajVWkpOMS Covid 24
-2 ENTER UzqnrbVnyndSB qkWJCbrPoOpHW Cancer 18
-2 ENTER BtnvlhmSYwhQp kAPlVvJYLyLij Cancer 4
-2 EXIT atESyTQvORuLX wTnuVltTskcvd Covid 32
-2 ENTER yxpoLaeXgZdBL scNAXyXldBjrB Cancer 14
-2 EXIT bGlXsfPveUEqE gGHYSUwBNuyKw Cancer 113
-2 ENTER KfuEYsKFBLUVs CymtYWDAhFACq Ebola 31

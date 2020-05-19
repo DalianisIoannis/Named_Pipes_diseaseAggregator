@@ -1,8 +1,0 @@
-2 ENTER qOAfKqlPauvfd zagAuuoTaHhVI Ebola 103
-2 ENTER eRXUFQRhIbkgE cVwgpoLGjeeyU Ebola 114
-2 ENTER GfGSRsbmiHQyp olCFxvCYcgyly Ebola 71
-2 ENTER nuQxdKigNVgsD XXJdomWcSqfAH Ebola 81
-2 EXIT taqhKOulXghXX btlfWCWMYsRXX Covid 0
-2 ENTER YDZpLSBjyxQJN gltSaiwsCQZVz Cancer 34
-2 EXIT MgXLYvFTIyYzY tiUhJtNripttK Cancer 116
-2 ENTER jtGNJcPPBBZFX MIrcCzWbjnIQE Covid 22

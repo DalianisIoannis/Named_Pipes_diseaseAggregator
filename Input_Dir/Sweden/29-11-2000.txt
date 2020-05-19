@@ -1,8 +1,0 @@
-2 ENTER SrmdNGlgkCOda kGvsixcbueZPj Cancer 113
-2 EXIT pfLMbGXiTlXxG msXRifPLqbsVx Covid 54
-2 ENTER WSkQVDbQIRqoR ftCgcBGSaPXrc Covid 25
-2 ENTER aXZiTZNnfYuCe BeqVQGGySwkwe Mpampis 38
-2 ENTER xtIbXlUZzhsgV RriPzjlgeRIWP Cancer 103
-2 ENTER hitTFPnGglBRt ZGjVLwJNoYpEm Mpampis 34
-2 ENTER iZHkOfClUMQSt xZHYMorHMARaD Ebola 68
-2 EXIT iDMRrkRqHpLIU oireniLEdjtRC Mpampis 63

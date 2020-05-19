@@ -1,8 +1,0 @@
-2 ENTER rGbOPfhBVgFxF vmoxyRVcvcEnP Cancer 109
-2 ENTER kcDUuIjeJmqti BhXAwGncVZbbL Ebola 47
-2 ENTER jHeBlEnBtCdjT nSsVkKMZMbUWT Covid 42
-2 ENTER NGEVLDZVlpQDW dVBySsiQomeVf Covid 107
-2 EXIT owltcEdrDTLOF CJnQFtRyWhJnM Mpampis 105
-2 ENTER HCjNaqqmrUjMs ZCcqAQkxekIUy Mpampis 33
-2 ENTER XMypoitsvFnDN kChXsOVslYpwd Cancer 50
-2 EXIT lhOMpHwecVZOg sboCxAzWGxhKs Covid 75

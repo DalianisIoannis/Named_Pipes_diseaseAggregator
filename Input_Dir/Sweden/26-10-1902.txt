@@ -1,8 +1,0 @@
-2 ENTER AayfjGYnPliAv SfwRjLfiYPSut Mpampis 40
-2 EXIT gKpPaxcUyDntZ cpiwEhLmlpgUk Mpampis 31
-2 ENTER AkoqvKiWlQZTj PZQztvvwtbVOn Covid 70
-2 ENTER ZJVAIGSeFtmbp zFroMzivrbiTv Covid 74
-2 EXIT qStyImDiDGRVe VxIPhvjVIcNjf Mpampis 28
-2 ENTER YbYyuLuGMRCGE wYFDmWMFFrJjH Ebola 50
-2 EXIT OPHxthbNRyYQb oxuxVyyUoqNwA Ebola 114
-2 EXIT YXhieCggteFkU kbmYHTqddOXWd Ebola 42

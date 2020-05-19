@@ -1,8 +1,0 @@
-2 ENTER fhCykpEeGOTEo wXNPUbOrMmAew Ebola 87
-2 EXIT oqCxBpeWUwfmR PFTLLhhLiUdyU Cancer 89
-2 ENTER cyzrrIWbKPiIW XpSirgwvfUkYc Ebola 117
-2 ENTER sWhQCLSpuoGIw jyOMSFUfqxwKA Mpampis 101
-2 ENTER lWlmmFXDseCbk XaqskwLEDbcie Cancer 47
-2 EXIT MqFInrmxeWUSt lhLHpMpyEfJVX Covid 110
-2 ENTER mCbKHMjnIERaX ZlkwjKCkcrXwS Covid 0
-2 ENTER McEiKMlyKwfmA OOUZZyeUTUxnS Ebola 80

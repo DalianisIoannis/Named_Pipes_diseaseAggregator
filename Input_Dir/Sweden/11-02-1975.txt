@@ -1,8 +1,0 @@
-2 ENTER WwlLThQcGGxlq lcwjCptnTzekS Covid 91
-2 ENTER HgEWhdrhSeFgi hcIjrVkMajhwP Cancer 44
-2 EXIT ZtpCHHFdgIREG uBqpFVnpAyfcQ Mpampis 42
-2 EXIT ymZNhqyFFVxPE LaTEcZfPYvRRG Covid 45
-2 ENTER azIMWjjyKfmnE zjdBBdmpkEnnX Cancer 89
-2 ENTER LWIrykGfpdWja RLoXGjAdIrwKo Cancer 26
-2 ENTER URVQRKGOtwWls PZnSqnhMANNJU Ebola 1
-2 ENTER UYRXsHUeOHvxf VfwyhPEvEzxRI Covid 45

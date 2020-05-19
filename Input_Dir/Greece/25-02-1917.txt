@@ -1,8 +1,0 @@
-2 ENTER gOcLvGmXZuZeW lTULOseAULMEu Ebola 87
-2 ENTER YFAEGdvunMmSk sIusFsLWbiVtK Ebola 47
-2 EXIT jGwXKQgAZSpOQ XhHFRBJFpCmgP Mpampis 82
-2 ENTER GboPdMDaoguAt BeotNjWgbQebs Mpampis 99
-2 ENTER lYGxzexnHzjvE wGxYtLVnEcSBK Covid 14
-2 ENTER KYOZfSFcColoW TPDpIiqqzrfoL Covid 25
-2 ENTER gvcOhoGPKXceH RzOKGXwzTVWIQ Mpampis 97
-2 EXIT ORqnJMlQPdBRj BOHhSOqUOyltK Covid 109

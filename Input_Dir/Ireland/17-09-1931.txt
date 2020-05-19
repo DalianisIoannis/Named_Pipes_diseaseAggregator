@@ -1,8 +1,0 @@
-2 ENTER QdTMzPTerznAT CcjeomNbFQBHl Ebola 23
-2 ENTER uMKGueCmzmiTs cnOBAOANldgRj Ebola 109
-2 ENTER MViAzJKiBcjWy PkuyhIGEVmTag Ebola 106
-2 ENTER IGFGAkSmTOzJY jGuDpyHlKNdsS Cancer 86
-2 EXIT HmeaRreZnjhzE QkGaQPuHDHkWC Mpampis 13
-2 ENTER fVbujAXRifAfJ OZImRYmLDtKxH Covid 21
-2 EXIT GuXmUKaMnBljt ZbSYntfFlGwYo Ebola 15
-2 ENTER trqDhIJhspuXd QgaUFVTJnHAKN Ebola 118
