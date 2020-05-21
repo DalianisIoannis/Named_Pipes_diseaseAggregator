@@ -22,14 +22,21 @@ $(EXECUTABLE): $(OBJ)
 
 clean:
 	rm -f $(ODIR)/*.o
+	rm -f worker
 	rm -f $(EXECUTABLE)
 
 script:
 	# ./create_infiles.sh <diseasesFile> <countriesFile> <input_dir> <numFilesPerDir> <numRecordsPerFile>
 	./create_infiles.sh "./Assets/countriesFile.txt" "./Assets/diseasesFile.txt" "Input_Dir" 7 8
 
-all:
-	clear
-	make clean
-	make
-	valgrind ./diseaseAggregator –w 10 -b 32 -i "./Input_Dir/"
+all: $(EXECUTABLE)
+
+sec:
+	$(CC) $(CFLAGS) -c ./src/worker.c -o ./build/worker.o $(LDFLAGS)
+	$(CC) $(CFLAGS) ./build/worker.o ./build/generalFuncs.o -o worker
+
+valgrind:
+	valgrind --trace-children=yes ./diseaseAggregator -w 5 -b 32 -i "./Input_Dir/"
+
+run:
+	./diseaseAggregator -w 5 -b 32 -i "./Input_Dir/"
