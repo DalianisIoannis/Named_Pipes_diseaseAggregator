@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,5 +17,12 @@
 #include <time.h>
 
 int countDirFiles(char*);
+int returnMaxInt(int, int);
 char** getCountriesDirs(char*, int);
 char** strtokDirs(char*, int);
+bool isNumber(const char*);
+int compareDates(char*, char*);
+char** WorkerCounts(char**, int, int);
+int countcountryFiles(char*);
+char* makeFullPathName(char*, char*);
+void printStatString(char*);

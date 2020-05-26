@@ -12,6 +12,7 @@ while IFS= read -r line
 do
     fileCounter=0
     mkdir -p $3/$line
+    id=2
     while [ $fileCounter -lt $4 ]
     do
         day=$((1 + RANDOM % 29))
@@ -29,7 +30,7 @@ do
         entryCounter=0
         while [ $entryCounter -lt $5 ]
         do
-            id=2
+            # id=2
             state="EXIT"
             ran=$((RANDOM % 10))
             if [ "$ran" -le 6 ]; then
@@ -37,8 +38,10 @@ do
             fi
 
             entry=$id" "$state" "$(head /dev/urandom | tr -dc A-Za-z | head -c 13)" "$(head /dev/urandom | tr -dc A-Za-z | head -c 13)" "$(shuf -n 1 $country)" "$((RANDOM % 120))
-            echo $entry >> $3/$line/$date.txt
+            # echo $entry >> $3/$line/$date.txt
+            echo $entry >> $3/$line/$date
             ((entryCounter++))
+            ((id++))
         done
         ((fileCounter++))
     done

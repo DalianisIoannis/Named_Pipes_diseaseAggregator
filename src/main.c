@@ -1,6 +1,9 @@
 #include "../headers/generalFuncs.h"
+#include "../headers/workerInfo.h"
+#include "../headers/pipes.h"
 
 int main(int argc, char** argv){
+    // int pipeSize = fpathconf(workArray[i]->fdRead, _PC_PIPE_BUF);
     // for(int i = 0; i < argc; i++){ printf("for %d have %s\n", i, argv[i]); }
     // argv[0] ./diseaseAggregator
     // argv[1] -w
@@ -14,90 +17,93 @@ int main(int argc, char** argv){
         fprintf(stderr, "Command must be in form: ./diseaseAggregator –w numWorkers -b bufferSize -i input_dir!\n");
         exit(1);
     }
-
+    int bufferSize = 1;
     DIR* dir = opendir(argv[6]);
-    int totalCountries = countDirFiles(argv[6]);
-    printf("Total directories %d\n", totalCountries);
-
-    char** countriesDirs = getCountriesDirs(argv[6], totalCountries);
-    for(int i=0; i<totalCountries; i++){
-        printf("%s\n", countriesDirs[i]);
-    }
-    printf("\n");
-
     int numWorkers = atoi(argv[2]);
-    pid_t Workers[numWorkers];
-    int i;
-    int fdRead[numWorkers], fdWrite[numWorkers];
+    workerDataNode* workArray = malloc(numWorkers*sizeof(workerDataNode));
+    int totalCountries = countDirFiles(argv[6]);    // total country Dirs
+    printf("Directories are %d\n", totalCountries);
+    
+    if( totalCountries<numWorkers ){
+        closedir(dir);
+        fprintf(stderr, "Country Directories should be at least equal to numWorkers!\n");
+        exit(1);
+    }
+    
+    char** countriesDirs = getCountriesDirs(argv[6], totalCountries);
+    
+    for(int i=0; i<totalCountries; i++){ printf("%s\n", countriesDirs[i]); } printf("\n");
+    
+    char** countriesPerWorker =  WorkerCounts(countriesDirs, totalCountries, numWorkers);
+    
+    for(int i=0; i<numWorkers; i++){ printf("For worker %d %s\n", i, countriesPerWorker[i]); }
 
-    char **FIFOar = malloc(numWorkers*sizeof(char*));
-    for(i=0; i<numWorkers; i++){
-        FIFOar[i] = malloc( (sizeof("descriptor")+3)*sizeof(char*) );
-        sprintf(FIFOar[i], "descriptor%d", i);
-        mkfifo(FIFOar[i], 0666);
+
+    for(int i=0; i<numWorkers; i++){
+        workArray[i] = makeWorkerArCell(getpid(), countriesPerWorker[i], 5, 5, 5, i);
     }
 
-    for(i=0; i<numWorkers; i++){
-        Workers[i] = fork();
-        srand(getpid());
-        if(Workers[i]<0){
+    for(int i=0; i<numWorkers; i++){
+        workArray[i]->pid = fork();
+
+        if(workArray[i]->pid<0){
             perror("Fork");
             exit(1);
         }
-        if (Workers[i]==0) {    // i am child
-            int randomNumDirs = rand()%totalCountries;
-            while(randomNumDirs==0){
-                randomNumDirs = rand()%totalCountries;
-            }
 
-            int strSize=0;
-            for(int i=0; i<randomNumDirs; i++){
-                strSize=strSize+(strlen(countriesDirs[i])+1)*sizeof(char);  // for space
-            }
-            
-            char numAsStr[5];
-            sprintf(numAsStr, "%d", randomNumDirs);
-            char *conStr = malloc((strSize+1+strlen(numAsStr)+1)*sizeof(char));
-            strcpy(conStr, numAsStr);
-            strcat(conStr, " ");
-            for(int i=0; i<randomNumDirs; i++){
-                strcat(conStr, countriesDirs[i]);
-                strcat(conStr, " ");
-            }
-            printf("Concatenated %s\n", conStr);
-            execl("./worker", "worker", FIFOar[i], conStr, argv[6], NULL);
-            // free(conStr);
+        if (workArray[i]->pid==0) {    // i am child
+
+            execl("./worker", "worker", workArray[i]->fifoRead, countriesPerWorker[i], argv[6], workArray[i]->fifoWrite, NULL);
         }
-        // } else {    // i am father 
-        //     // fdRead[i] = open(FIFOar[i], O_RDONLY);
-        //     int pipeSize = fpathconf(fdRead[i], _PC_PIPE_BUF);
-        //     char arr1[pipeSize];
-        //     read(fdRead[i], arr1, pipeSize);
-        //     printf("User2: %s\n", arr1);
-        //     // close(fdRead[i]);
-        //     // wait(0);
-        // }
+    }
+
+    for(int i=0; i<numWorkers; i++){    // i am father
+        workArray[i]->fdRead = open(workArray[i]->fifoRead, O_RDONLY);
+        workArray[i]->fdWrite = open(workArray[i]->fifoWrite, O_WRONLY);
+    }
+
+    for(int i=0; i<numWorkers; i++){
+    
+        char arr1[5];
+        char* ret=receiveMessage(workArray[i]->fdRead, arr1, bufferSize);
+        printf("Stats send are %d\n", atoi(ret));
+        for(int j=0; j<atoi(ret); j++){
+            char arr3[5];
+            char* ret3=receiveMessage(workArray[i]->fdRead, arr3, bufferSize);
+            // printStatString(ret3);
+            free(ret3);
+        }
+        free(ret);
+
+        char arr2[5];
+        char* ret2=receiveMessage(workArray[i]->fdRead, arr2, bufferSize);
+        printf("RET is %s\n", ret2);
+        free(ret2);
+
+        // char *writer = malloc( (strlen("write_from_parent")+3)*sizeof(char) );
+        // sprintf(writer, "write_from_parent%d", i);
+        // sendMessage(workArray[i]->fdWrite, writer, bufferSize);
+        // free(writer);
     }
     for(int i=0; i<numWorkers; i++){
-        fdRead[i] = open(FIFOar[i], O_RDONLY);
-        int pipeSize = fpathconf(fdRead[i], _PC_PIPE_BUF);
-        char arr1[pipeSize];
-        read(fdRead[i], arr1, pipeSize);
-        printf("User2: %s\n", arr1);
-        close(fdRead[i]);
+        close(workArray[i]->fdRead);
+        close(workArray[i]->fdWrite);
     }
     wait(0);
-    
-    for(i=0; i<numWorkers; i++){
-        unlink(FIFOar[i]);
-        free(FIFOar[i]);
-    }
+
     for(int i=0; i<totalCountries; i++){
         free(countriesDirs[i]);
     }
-    free(FIFOar);
     free(countriesDirs);
+    for(int i=0; i<numWorkers; i++){
+        free(countriesPerWorker[i]);
+    }
+    free(countriesPerWorker);
     closedir(dir);
-
+    for(int i=0; i<numWorkers; i++){
+        // printWorkerNode(workArray[i]);
+        emptyworkerNode(&(workArray[i]));
+    }
+    free(workArray);
     return 0;
 }
