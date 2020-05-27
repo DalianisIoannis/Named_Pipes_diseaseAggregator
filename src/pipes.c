@@ -22,7 +22,7 @@ int sendMessage(int fd, char* buf, int buf_size){
         write(fd, buf+(i*buf_size), buf_size);
     }
 
-    if(bufLen%buf_size){
+    if(bufLen%buf_size!=0){
         write(fd, buf+(bufLen-bufLen%buf_size), buf_size);
     }
     return 0;    

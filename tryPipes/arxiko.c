@@ -124,7 +124,7 @@ int main(int argc, char** argv){
             // printf("Read from child: %s\n", arr2);
         // }
         for(int j=0; j<5; j++){
-            char *ret=decodePipe(fdRead[i], arr2, 1);
+            char *ret=decodePipe(fdRead[i], arr2, 32);
             printf("RET is %s\n", ret);
             free(ret);
         }

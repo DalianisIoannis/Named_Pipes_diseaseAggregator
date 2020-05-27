@@ -64,18 +64,18 @@ int main(int argc, char** argv){
 
     for(int i=0; i<numWorkers; i++){
     
-        char arr1[5];
+        char arr1[bufferSize];
         char* ret=receiveMessage(workArray[i]->fdRead, arr1, bufferSize);
         printf("Stats send are %d\n", atoi(ret));
         for(int j=0; j<atoi(ret); j++){
-            char arr3[5];
+            char arr3[bufferSize];
             char* ret3=receiveMessage(workArray[i]->fdRead, arr3, bufferSize);
             // printStatString(ret3);
             free(ret3);
         }
         free(ret);
 
-        char arr2[5];
+        char arr2[bufferSize];
         char* ret2=receiveMessage(workArray[i]->fdRead, arr2, bufferSize);
         printf("RET is %s\n", ret2);
         free(ret2);

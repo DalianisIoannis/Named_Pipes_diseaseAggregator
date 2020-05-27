@@ -88,7 +88,7 @@ int main (int argc, char** argv) {
     for(int i=0; i<5; i++){
         // int pipeSize = fpathconf(fd_Write, _PC_PIPE_BUF);
         // write(fd_Write, "kkk", pipeSize);
-        encodePipe(fd_Write, "kkkkkkkkkkkkkkkkkkkk", 1);
+        encodePipe(fd_Write, "kkkkkkkkkkkkkkkkkkkk", 32);
     }
 
     // int pipeSize = fpathconf(fd_Read, _PC_PIPE_BUF);
