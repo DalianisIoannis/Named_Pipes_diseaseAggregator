@@ -8,10 +8,10 @@ SDIR = src
 
 EXECUTABLE = diseaseAggregator
 
-_DEPS = generalFuncs.h workerInfo.h pipes.h
+_DEPS = general.h countryList.h workers.h pipes.h fatherFunctions.h statistics.h patients.h linkedList.h statistics.h HashTable.h AVL.h MaxHeap.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o generalFuncs.o workerInfo.o pipes.o
+_OBJ = main.o countryList.o workers.o pipes.o fatherFunctions.o statistics.o patients.o linkedList.o general.o statistics.o HashTable.o AVL.o MaxHeap.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
@@ -22,7 +22,6 @@ $(EXECUTABLE): $(OBJ)
 
 clean:
 	rm -f $(ODIR)/*.o
-	rm -f worker
 	rm -f $(EXECUTABLE)
 
 script:
@@ -31,22 +30,16 @@ script:
 
 all: $(EXECUTABLE)
 
-comps:
-	make
-	make sec
-
-sec:
-	$(CC) $(CFLAGS) -c ./src/worker.c -o ./build/worker.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/patients.c -o ./build/patients.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/AVL.c -o ./build/AVL.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/linkedList.c -o ./build/linkedList.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/HashTable.c -o ./build/HashTable.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/MaxHeap.c -o ./build/MaxHeap.o $(LDFLAGS)
-	$(CC) $(CFLAGS) -c ./src/statistics.c -o ./build/statistics.o $(LDFLAGS)
-	$(CC) $(CFLAGS) ./build/worker.o ./build/generalFuncs.o ./build/statistics.o ./build/MaxHeap.o ./build/pipes.o ./build/HashTable.o ./build/patients.o ./build/AVL.o ./build/linkedList.o -o worker
-
 valgrind:
 	valgrind --track-origins=yes --trace-children=yes --leak-check=full ./diseaseAggregator -w 5 -b 32 -i "./Input_Dir/"
 
 run:
 	./diseaseAggregator -w 5 -b 32 -i "./Input_Dir/"
+
+
+
+
+
+
+	# 51 EXIT guEmFkICmuQhe YOKmWlBjNjpoa Ebola 75
+	# 25-08-1950 Australia Mpampis 0 1 0 1

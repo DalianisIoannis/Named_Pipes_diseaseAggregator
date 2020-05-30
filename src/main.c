@@ -1,10 +1,12 @@
-#include "../headers/generalFuncs.h"
-#include "../headers/workerInfo.h"
+#include "../headers/general.h"
+#include "../headers/workers.h"
+#include "../headers/countryList.h"
 #include "../headers/pipes.h"
+#include "../headers/fatherFunctions.h"
+#include "../headers/statistics.h"
 
-int main(int argc, char** argv){
-    // int pipeSize = fpathconf(workArray[i]->fdRead, _PC_PIPE_BUF);
-    // for(int i = 0; i < argc; i++){ printf("for %d have %s\n", i, argv[i]); }
+int main(int argc, char **argv)
+{
     // argv[0] ./diseaseAggregator
     // argv[1] -w
     // argv[2] numWorkers
@@ -17,93 +19,164 @@ int main(int argc, char** argv){
         fprintf(stderr, "Command must be in form: ./diseaseAggregator –w numWorkers -b bufferSize -i input_dir!\n");
         exit(1);
     }
-    int bufferSize = 1;
-    DIR* dir = opendir(argv[6]);
+
+    int bufferSize = atoi(argv[4]);
     int numWorkers = atoi(argv[2]);
-    workerDataNode* workArray = malloc(numWorkers*sizeof(workerDataNode));
-    int totalCountries = countDirFiles(argv[6]);    // total country Dirs
-    printf("Directories are %d\n", totalCountries);
+    printf("Number of Workers is %d.\n", numWorkers);
+    printf("Buffersize is %d.\n", bufferSize);
     
-    if( totalCountries<numWorkers ){
-        closedir(dir);
-        fprintf(stderr, "Country Directories should be at least equal to numWorkers!\n");
+    char *input_dir = strdup(argv[6]);
+    printf("Input Dir is %s.\n", input_dir);
+    DIR* dir = opendir(input_dir);
+    closedir(dir);
+
+
+    workerDataNode* WorkersArr = NULL;
+    if ( (WorkersArr = malloc(numWorkers*sizeof(workerDataNode*))) == NULL ) {
+        perror("WorkersArr malloc");
         exit(1);
     }
-    
-    char** countriesDirs = getCountriesDirs(argv[6], totalCountries);
-    
-    for(int i=0; i<totalCountries; i++){ printf("%s\n", countriesDirs[i]); } printf("\n");
-    
-    char** countriesPerWorker =  WorkerCounts(countriesDirs, totalCountries, numWorkers);
-    
-    for(int i=0; i<numWorkers; i++){ printf("For worker %d %s\n", i, countriesPerWorker[i]); }
 
+    pid_t pid = 0;
+    for (int i=0; i < numWorkers; i++) {
+        pid = fork();
 
-    for(int i=0; i<numWorkers; i++){
-        workArray[i] = makeWorkerArCell(getpid(), countriesPerWorker[i], 5, 5, 5, i);
-    }
-
-    for(int i=0; i<numWorkers; i++){
-        workArray[i]->pid = fork();
-
-        if(workArray[i]->pid<0){
+        if (pid < 0) {
             perror("Fork");
             exit(1);
         }
 
-        if (workArray[i]->pid==0) {    // i am child
+        else if (pid == 0) {    // child
 
-            execl("./worker", "worker", workArray[i]->fifoRead, countriesPerWorker[i], argv[6], workArray[i]->fifoWrite, NULL);
+            int rfd, wfd;
+
+            char* fiforead = malloc( (strlen("./pipeFiles/reader_des")+12) );
+            sprintf(fiforead, "./pipeFiles/reader_des%d", getpid());
+
+            char *fifowrite = malloc((strlen("./pipeFiles/writer_des")+12));
+            sprintf(fifowrite, "./pipeFiles/writer_des%d", getpid());
+
+            if ((wfd = open(fiforead, O_WRONLY)) == -1) {
+            // if ((wfd = open(WorkersArr[i]->fifoRead, O_WRONLY)) == -1) {
+                perror("open wfd");
+
+            }
+            if ((rfd = open(fifowrite, O_RDONLY)) == -1) {
+                perror("open rfd");
+            }
+
+            WorkerRun(input_dir, bufferSize, rfd, wfd, WorkersArr[i]);
+
+            // char arr[bufferSize];
+            // char* readed = receiveMessage(rfd, arr, bufferSize);
+            // printf("%s\n", readed);
+            // free(readed);
+
+            for(int j=0; j < i; j++) {
+
+                emptyworkerNode(&WorkersArr[j]);
+
+            }
+
+            free(WorkersArr);
+
+            free(fiforead);
+            free(fifowrite);
+            free(input_dir);
+            
+            exit(0);
+        }
+
+        else {
+            if ((WorkersArr[i] = makeWorkerArCell(pid)) == NULL)
+            {
+                perror("makeWorkerArCell failed\n");
+            }
+            sendMessage(WorkersArr[i]->fdWrite, "k", bufferSize);
         }
     }
 
-    for(int i=0; i<numWorkers; i++){    // i am father
-        workArray[i]->fdRead = open(workArray[i]->fifoRead, O_RDONLY);
-        workArray[i]->fdWrite = open(workArray[i]->fifoWrite, O_WRONLY);
+    sendCountriesToWorkers(WorkersArr, input_dir, numWorkers, bufferSize);
+
+    for (int i=0; i < numWorkers; i++) {
+        for( ; ; ) {
+
+            char arr[bufferSize];
+            char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
+
+            if(strcmp(readed, "OK")==0){
+                free(readed);
+                break;
+            }
+            
+            // printStatsFromConcat(readed);
+            
+            free(readed);
+
+        }
     }
 
-    for(int i=0; i<numWorkers; i++){
+    // int maxfd;
+    // fd_set read_fds;
+
+    // for ( ;; ) {
+
+    //     FD_ZERO(&read_fds)
+
+    //     for (int i =0; i < numWorkers; i++) {
+    //         FD_SET(workers_arr[i].rfd, &read_fds);
+            
+    //     }
+
+    //     // find max rfd
+
+    //     select(maxfd + 1, &read_fds, null, null, null)
+
+    //     int fd
+    //     for (int i =0; i < numWorkers; i++) {
+    //         FD_ISSET(workers_arr[i].rfd, &read_fds) {
+    //             fd = workers_arr[i].rfd
+    //         }
+    //     }
+
+    //     statisticks = read(fd)
+    //     if (statistics == "OK") {
+    //         count ++;
+    //         if (count == numWorkers) {
+    //             break;
+    //         }
+    //         else {
+    //             //store statictis 
+    //         }
+    //     }
+    // }
+
+
+    // Querries
+    FatherQuerries(WorkersArr, numWorkers, bufferSize);
+    // while(getline(stdin)) {
+    //     send wy
+    // }
+
+
+ 
+    for(int i=0; i < numWorkers; i++) {
+        wait(NULL);
+    }
+
+    for(int i=0; i < numWorkers; i++) {
+
+        // emptycountryList( &(WorkersArr[i]->PIDcountries) );
+        // free(WorkersArr[i]->PIDcountries);
+
+        unlink(WorkersArr[i]->fifoRead);
+        unlink(WorkersArr[i]->fifoWrite);
+
+        emptyworkerNode(&(WorkersArr[i]));
     
-        char arr1[bufferSize];
-        char* ret=receiveMessage(workArray[i]->fdRead, arr1, bufferSize);
-        printf("Stats send are %d\n", atoi(ret));
-        for(int j=0; j<atoi(ret); j++){
-            char arr3[bufferSize];
-            char* ret3=receiveMessage(workArray[i]->fdRead, arr3, bufferSize);
-            // printStatString(ret3);
-            free(ret3);
-        }
-        free(ret);
+    }
+    free(WorkersArr);
 
-        char arr2[bufferSize];
-        char* ret2=receiveMessage(workArray[i]->fdRead, arr2, bufferSize);
-        printf("RET is %s\n", ret2);
-        free(ret2);
-
-        // char *writer = malloc( (strlen("write_from_parent")+3)*sizeof(char) );
-        // sprintf(writer, "write_from_parent%d", i);
-        // sendMessage(workArray[i]->fdWrite, writer, bufferSize);
-        // free(writer);
-    }
-    for(int i=0; i<numWorkers; i++){
-        close(workArray[i]->fdRead);
-        close(workArray[i]->fdWrite);
-    }
-    wait(0);
-
-    for(int i=0; i<totalCountries; i++){
-        free(countriesDirs[i]);
-    }
-    free(countriesDirs);
-    for(int i=0; i<numWorkers; i++){
-        free(countriesPerWorker[i]);
-    }
-    free(countriesPerWorker);
-    closedir(dir);
-    for(int i=0; i<numWorkers; i++){
-        // printWorkerNode(workArray[i]);
-        emptyworkerNode(&(workArray[i]));
-    }
-    free(workArray);
+    free(input_dir);
     return 0;
 }

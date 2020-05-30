@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #include "./patients.h"
-#include "./generalFuncs.h"
+#include "./general.h"
 
 typedef struct AVLNode{
     patientRecord item;

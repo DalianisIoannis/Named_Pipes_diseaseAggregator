@@ -16,13 +16,25 @@
 #include <limits.h>
 #include <time.h>
 
-int countDirFiles(char*);
-int returnMaxInt(int, int);
-char** getCountriesDirs(char*, int);
-char** strtokDirs(char*, int);
-bool isNumber(const char*);
+typedef struct str_node
+{
+    char *str;
+    struct str_node *next;
+} str_node;
+
+
+
+typedef struct worker
+{
+    pid_t pid;
+    int wfd;
+    int rfd;
+    str_node country;
+} worker;
+
 int compareDates(char*, char*);
-char** WorkerCounts(char**, int, int);
-int countcountryFiles(char*);
-char* makeFullPathName(char*, char*);
-void printStatString(char*);
+bool isNumber(const char*);
+int returnMaxInt(int, int);
+void swapINT(int*, int*);
+void swapSTR(char*, char*);
+void selectionSort(int*, int, char**);

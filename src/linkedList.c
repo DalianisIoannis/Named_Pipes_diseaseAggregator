@@ -73,3 +73,54 @@ void printLinkedList(Linked_List ll){
 //     }
 //     return false;
 // }
+
+bool updateExitDate(Linked_List *ll, patientRecord pR){
+    listNode tmp = (*ll)->front;
+    while(tmp!=NULL){
+        // if( strcmp(tmp->item->recordId, pR->recordId)==0 && strcmp(tmp->item->country, pR->country)==0  && strcmp(tmp->item->diseaseID, pR->diseaseID)==0 && strcmp(tmp->item->patientLastName, pR->patientLastName)==0 ){
+        if( strcmp(tmp->item->recordId, pR->recordId)==0 ){
+
+            int comparer = compareDates(tmp->item->entryDate, pR->exitDate);
+            if( comparer==0 || comparer==2 ){
+                changePatientExitDate( &(tmp->item), pR->exitDate );
+            }
+            else{
+                printf("Can't have exited on that date!\n");
+            }
+            return true;
+        }
+        tmp = tmp->next;
+    }
+    return false;
+}
+
+char* returnPatientifExists(Linked_List ll, char* ID) {
+
+    listNode tmp = ll->front;
+    while(tmp!=NULL){
+        if( strcmp(tmp->item->recordId, ID)==0 ){
+
+            // printRecord(tmp->item);
+            char* returner = malloc( (strlen(tmp->item->recordId)+strlen(tmp->item->patientFirstName)+strlen(tmp->item->patientLastName)+strlen(tmp->item->diseaseID)+strlen(tmp->item->entryDate)+strlen(tmp->item->exitDate)+strlen(tmp->item->age)+7+1)*sizeof(char) );
+            strcpy(returner, tmp->item->recordId);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->patientFirstName);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->patientLastName);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->diseaseID);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->age);
+            // strcat(returner, " ");
+            // strcat(returner, tmp->item->country);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->entryDate);
+            strcat(returner, " ");
+            strcat(returner, tmp->item->exitDate);
+            return returner;
+
+        }
+        tmp = tmp->next;
+    }
+    return NULL;
+}

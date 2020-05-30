@@ -1,5 +1,4 @@
 #include "../headers/statistics.h"
-#include "../headers/patients.h"
 
 void freeStats(characteristic StN){
     if(StN!=NULL){
@@ -188,31 +187,4 @@ char* concatStats(characteristic strChars){
     strcat(returner, strChars->age60);
 
     return returner;
-}
-
-void printStatsFromConcat(char* stat) {
-    
-    // printf("STAT RETURNED %s\n", stat);
-    
-    char* tok = strtok(stat, " ");
-    printf("fileName is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("country is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("Virus is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("age0_20 is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("age21_40 is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("age41_60 is %s\n", tok);
-
-    tok = strtok(NULL, " ");
-    printf("age60 is %s\n", tok);
-
 }

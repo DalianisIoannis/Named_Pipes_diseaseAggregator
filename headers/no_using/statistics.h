@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./general.h"
+#include "./generalFuncs.h"
 #include "./patients.h"
 
 #include <stdbool.h>
@@ -36,4 +36,3 @@ void informCharList(StatisticsList*, patientRecord);
 void printStat(characteristic);
 void printStatList(StatisticsList);
 char* concatStats(characteristic);
-void printStatsFromConcat(char*);

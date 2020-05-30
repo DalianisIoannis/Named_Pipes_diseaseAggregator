@@ -5,6 +5,23 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "./general.h"
+
+typedef struct {
+
+    char* age0_20;
+    char* age21_40;
+    char* age41_60;
+    char* age61;
+
+} agesRange;
+typedef agesRange* agesRangePtr;
+
+agesRangePtr initAgeRangeStruct();
+void freeagesRangePtr(agesRangePtr*);
+void uploadRangeStats(agesRangePtr*, char*, int);
+void printRange(agesRangePtr, int);
+
 typedef struct HeapNode{
     char    *occurence;
     int     total;

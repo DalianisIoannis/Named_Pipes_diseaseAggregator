@@ -8,11 +8,11 @@ fi
 input=$1
 country=$2
 
+id=2
 while IFS= read -r line
 do
     fileCounter=0
     mkdir -p $3/$line
-    id=2
     while [ $fileCounter -lt $4 ]
     do
         day=$((1 + RANDOM % 29))

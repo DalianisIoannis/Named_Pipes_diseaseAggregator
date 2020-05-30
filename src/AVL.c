@@ -13,8 +13,6 @@ void emptyAVLnodes(AVLNodePtr node){    // Postorder deletion of all tree Nodes
         emptyAVLnodes(node->left);
         emptyAVLnodes(node->right);
 
-        deleteRecord(&(node->item));
-
         node->item      = NULL; 
         node->nodeKey   = NULL;
         node->left      = NULL;
@@ -128,7 +126,6 @@ bool compareAdd(AVLNodePtr *existent, AVLNodePtr *added, char *Id_dif){
     int comparer;
     bool ind;
     if( (*existent)==NULL ){
-        // printf("PROTO\n");
         (*existent)         = (*added);
         (*existent)->right  = NULL;
         (*existent)->left   = NULL;
@@ -143,7 +140,6 @@ bool compareAdd(AVLNodePtr *existent, AVLNodePtr *added, char *Id_dif){
     else{
 
         if( strcmp((*existent)->item->recordId, (*added)->item->recordId)==0 ){
-            // printf("VRIKA IDIO GA\n");
             free(*added);
             (*added) = NULL;
             return false;
@@ -162,7 +158,6 @@ bool compareAdd(AVLNodePtr *existent, AVLNodePtr *added, char *Id_dif){
             }
         }
         // if comparer is 2 second is bigger
-        // printf("comparer returned %d\n", comparer);
         if(comparer==0 || comparer==2){ // goes to the right
             ind = compareAdd( &(*existent)->right, added, Id_dif);
         }
@@ -256,8 +251,7 @@ void performRotations(AVLNodePtr* existent, AVLNodePtr* added){
 
 bool addAVLNode(AVLTreePtr tree, patientRecord pR, char *key_not_date){
     AVLNodePtr node = malloc(sizeof(AVLNode));
-    // printRecord(pR);
-    if(node==NULL){ printf("MISTAKE MAKING NODE\n"); return false; }
+    if(node==NULL){ return false; }
     node->item          = pR;
     node->nodeHeight    = 1;
     node->right         = NULL;
@@ -270,7 +264,6 @@ bool addAVLNode(AVLTreePtr tree, patientRecord pR, char *key_not_date){
     }
 
     if( !compareAdd( &(tree->root), &node, key_not_date ) ){
-        // printf("returns false\n");
         return false;
     }
     return true;

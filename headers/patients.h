@@ -6,7 +6,6 @@
 
 typedef struct{
     char* recordId;
-    char* situation;
     char* patientFirstName;
     char* patientLastName;
     char* diseaseID;
@@ -23,5 +22,3 @@ patientRecord initRecord(char*, char*, char*);
 void printRecord(patientRecord);
 void deleteRecord(patientRecord*);
 void changePatientExitDate(patientRecord*, char*);
-
-// 889 ENTER Mary Smith COVID-2019 23

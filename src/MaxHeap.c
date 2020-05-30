@@ -156,27 +156,131 @@ HeapNodePtr getNodeWithId(HeapNodePtr treenode, int id, HeapNodePtr *father){
     return NULL;
 }
 
+agesRangePtr initAgeRangeStruct() {
+    
+    agesRangePtr node = malloc(sizeof(agesRange));
+    if(node==NULL) {
+        perror("Allocation of agesRangePtr\n");
+        return NULL;
+    }
+    node->age0_20 = malloc(12);
+    sprintf(node->age0_20, "%d", 0);
+    node->age21_40 = malloc(12);
+    sprintf(node->age21_40, "%d", 0);
+    node->age41_60 = malloc(12);
+    sprintf(node->age41_60, "%d", 0);
+    node->age61 = malloc(12);
+    sprintf(node->age61, "%d", 0);
+
+    return node;
+}
+void freeagesRangePtr(agesRangePtr* node) {
+    free( (*node)->age0_20 );
+    free( (*node)->age21_40 );
+    free( (*node)->age41_60 );
+    free( (*node)->age61 );
+    free( (*node) );
+}
+
+void uploadRangeStats(agesRangePtr* node, char* age, int occs) {
+ 
+    int ageInt = atoi(age);
+    int lastCount;
+
+    if(ageInt<=20) {
+        lastCount = atoi((*node)->age0_20)+occs;
+        free((*node)->age0_20);
+        (*node)->age0_20 = malloc(12);
+        sprintf((*node)->age0_20, "%d", lastCount);
+    }
+    else if(ageInt<=40) {
+        lastCount = atoi((*node)->age21_40)+occs;
+        free((*node)->age21_40);
+        (*node)->age21_40 = malloc(12);
+        sprintf((*node)->age21_40, "%d", lastCount);
+    }
+    else if(ageInt<=60) {
+        lastCount = atoi((*node)->age41_60)+occs;
+        free((*node)->age41_60);
+        (*node)->age41_60 = malloc(12);
+        sprintf((*node)->age41_60, "%d", lastCount);
+    }
+    else {
+        lastCount = atoi((*node)->age61)+occs;
+        free((*node)->age61);
+        (*node)->age61 = malloc(12);
+        sprintf((*node)->age61, "%d", lastCount);
+    }
+ 
+}
+void printRange(agesRangePtr node, int k) {
+
+    int age0_20Int = atoi(node->age0_20);
+    int age21_40Int = atoi(node->age21_40);
+    int age41_60Int = atoi(node->age41_60);
+    int age61Int = atoi(node->age61);
+    int total = age0_20Int + age21_40Int + age41_60Int + age61Int;
+
+    int arINT[4];
+    arINT[0] = age0_20Int;
+    arINT[1] = age21_40Int;
+    arINT[2] = age41_60Int;
+    arINT[3] = age61Int;
+
+    char **arStr = malloc(4*sizeof(char*));
+    arStr[0] = malloc(strlen("41-60")+1);
+    strcpy(arStr[0], "0-20");
+
+    arStr[1] = strdup("21-40");
+    arStr[2] = strdup("41-60");
+    
+    arStr[3] = malloc(strlen("41-60")+1);
+    strcpy(arStr[3], "60+");
+
+    // printf("prin\n");
+    // for(int i=0; i<4; i++) {
+    //     printf("%d for %s\n", arINT[i], arStr[i]);
+    // }
+    selectionSort(arINT, 4, arStr);
+    // printf("meta\n");
+    // for(int i=0; i<4; i++) {
+    //     printf("%d for %s\n", arINT[i], arStr[i]);
+    // }
+    // printf("0-20: %.2f\n", (float)(((float)age0_20Int*(float)100)/(float)total) );
+    // printf("21-40: %.2f\n", (float)(((float)age21_40Int*(float)100)/(float)total) );
+    // printf("41-60: %.2f\n", (float)(((float)age41_60Int*(float)100)/(float)total) );
+    // printf("60+: %.2f\n", (float)(((float)age61Int*(float)100)/(float)total) );
+
+    int i=3;
+    while(i>=0 && k>0) {
+        printf("%s: %.2f%%\n", arStr[i], (float)(((float)arINT[i]*(float)100)/(float)total));
+        k--;
+        i--;
+    }
+
+    for(int i=0; i<4; i++) {
+        free(arStr[i]);
+    }
+    free(arStr);
+
+}
+
 // replace root with last inserted
 void printKlargestItems(MaxHeapPtr tree, int k, int *id){
 
     // printf("I am going to print the %d largest items of Heap:\n", k);
     // printMaxHeapNode(tree->root, 0); printf("\n\n\n");
 
-    // // int began = k;
-    // while(k>0 && tree->root!=NULL){
-    //     if( strcmp(tree->root->occurence, "$$$$$$$$$$$")!=0 ){ printf("%s %d\n", tree->root->occurence, tree->root->total); }
-    //     tree->root->occurence = "$$$$$$$$$$$";
-    //     tree->root->total = 0;
-    //     reheapify( &(tree->root) );
-    //     k--;
-    // }
+    agesRangePtr statistic = initAgeRangeStruct();
 
-    while( k>0 && tree->root!=NULL ){
-        k--;
+    // while( k>0 && tree->root!=NULL ){
+    while( tree->root!=NULL ){
+        // k--;
         HeapNodePtr father = NULL;
         HeapNodePtr tmp = getNodeWithId(tree->root, (*id)--, &father);
 
-        printf("%s %d\n", tree->root->occurence, tree->root->total);
+        printf("Age %s appeared %d\n", tree->root->occurence, tree->root->total);
+        uploadRangeStats(&statistic, tree->root->occurence, tree->root->total);
 
         if( tmp==NULL || strcmp(tmp->occurence, tree->root->occurence)==0 ){
             emptyMaxHeapNode(tree->root);
@@ -209,6 +313,10 @@ void printKlargestItems(MaxHeapPtr tree, int k, int *id){
         }
         reheapify( &(tree->root) );
     }
+
+    printRange(statistic, k);
+    freeagesRangePtr(&statistic);
+
 }
 
 bool addMaxHeapNode(MaxHeapPtr tree, char *item, int *id){

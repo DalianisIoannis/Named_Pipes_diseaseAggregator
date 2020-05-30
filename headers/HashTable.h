@@ -1,10 +1,11 @@
 #pragma once
 
 #include "./patients.h"
-#include "./generalFuncs.h"
+#include "./general.h"
 #include "./HashTable.h"
 #include "./AVL.h"
 #include "./MaxHeap.h"
+#include "./linkedList.h"
 
 #include <stdbool.h>
 
@@ -41,6 +42,12 @@ void    globalDiseaseStats(HashTable, char*, char*);
 void    countryOccurences(HashTable, char*, char*, char*, char*);
 void    topk(HashTable, char*, char*, char*, char*, bool);
 void    accesSpecificBucket(hashBucket, char*, int k, char*, char*, bool);
-void    diseaseFrequencyNoCountry(HashTable, char*, char*, char*);
-void    diseaseFrequencyCountry(HashTable, char*, char*, char*, char*);
+int     diseaseFrequencyNoCountry(HashTable, char*, char*, char*);
+int     diseaseFrequencyCountry(HashTable, char*, char*, char*, char*);
 void    numCurrentPatients(HashTable, char*);
+bool    inputLLtoHT(Linked_List Entries, HashTable HT_in, int ind);
+int     accessSpecificBucketAndPrintTotalOfOccurences(hashBucket, char*, char*, char*, char*);
+void    accesBucketForKAges(hashBucket, int, char*, char*, char*, char*);
+void    topkAgeRanges(HashTable, char*, char*, char*, char*, char*);
+void    addAVLnodesToHeapForAges(AVLNodePtr, MaxHeapPtr, int*, char*, char*, char*);
+void    callAgeBucket(hashBucket, char*);
