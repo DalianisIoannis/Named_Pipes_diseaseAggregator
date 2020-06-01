@@ -2,14 +2,10 @@
 #include "../headers/fatherFunctions.h"
 #include "../headers/workers.h"
 
-int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWorkers, int bufferSize){
+int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWorkers, int bufferSize, CountryList* ArForFather){
 
     struct dirent *entry;
     DIR* dir = opendir(inDir);
-
-    // if(dir) {
-    //     printf("EXISTS\n");
-    // }
 
     if (ENOENT == errno) {
         fprintf(stderr, "Directory does not exist!\n");
@@ -32,6 +28,7 @@ int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWork
             }
             
             sendMessage(WorkerArray[countNum]->fdWrite, tmp, bufferSize);
+            addCountryListNode(&(ArForFather[countNum]), tmp);
             
             free(tmp);
         }
@@ -51,7 +48,7 @@ int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWork
     return 0;
 }
 
-void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
+void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, CountryList* ArForFather) {
     char *inputString = NULL, *buffer = NULL;
     char *tmp; //, *ind1, *ind2, *instruct, *ind3, *ind4, *ind5, *ind6, *ind7;
     size_t size = 0;
@@ -80,14 +77,14 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
         else if(strcmp(tmp, "/listCountries")==0) {
     
             for(int i=0; i<numWorkers; i++) {
-                printf("Child pid %d\n", WorkersArr[i]->pid);
+                // printf("Child pid %d\n", WorkersArr[i]->pid);
 
                 sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
                 // read countries with pid
                 for( ; ; ) {
 
                     char arr[bufferSize];
-                    char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);;
+                    char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
 
                     if(strcmp(readed, "OK")==0){
                         free(readed);
@@ -112,7 +109,6 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
             char* ind2 = strtok(NULL," ");
             char* ind3 = strtok(NULL," ");
             char* ind4 = strtok(NULL," ");
-            // char* ind5 = strtok(NULL," ");
 
             if( strcmp(instruct, "/diseaseFrequency")==0 ){ // diseaseFrequency virusName date1 date2 [country]
 
@@ -146,6 +142,13 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
                             for(int i=0; i<numWorkers; i++) {
                                 
                                 sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                                
+                                char arr[bufferSize];
+                                char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);                                
+                                if(atoi(readed)!=0) {
+                                    printf("%d\n", atoi(readed));
+                                }
+                                free(readed);
                             
                             }
 
@@ -156,7 +159,16 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
             else if(strcmp(instruct, "/topk-AgeRanges")==0) {
 
                 for(int i=0; i<numWorkers; i++) {
+                    
                     sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+
+                    char arr[bufferSize];
+                    char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
+                    if( strcmp(readed, "WRONG")!=0 ) {
+                        printf("%s\n", readed);
+                    }
+                    free(readed);
+
                 }
 
             }
@@ -175,6 +187,49 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize){
 
                 }
 
+            }
+            else if(strcmp(instruct, "/numPatientAdmissions")==0) {
+                for(int i=0; i<numWorkers; i++) {
+                    sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                }
+            }
+            else if(strcmp(instruct, "/numPatientDischarges")==0) {
+                if(ind4==NULL) {
+                    for(int i=0; i<numWorkers; i++) {
+                        
+                        sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+
+                        for( ; ; ) {
+
+                            char arr[bufferSize];
+                            char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);;
+
+                            if(strcmp(readed, "OK")==0){
+                                free(readed);
+                                break;
+                            }
+
+                            printf("%s\n", readed);
+                            
+                            free(readed);
+
+                        }
+                    }
+                }
+                else {
+                    for(int i=0; i<numWorkers; i++) {
+                        sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                        
+                        char arr[bufferSize];
+                        char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);;
+
+                        if(strcmp(readed, "NONE")!=0){
+                            printf("%s\n", readed);
+                        }
+                        
+                        free(readed);
+                    }
+                }
             }
 
             free(dupString);

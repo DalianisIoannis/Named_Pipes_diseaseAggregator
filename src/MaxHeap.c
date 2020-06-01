@@ -213,13 +213,16 @@ void uploadRangeStats(agesRangePtr* node, char* age, int occs) {
     }
  
 }
-void printRange(agesRangePtr node, int k) {
 
-    int age0_20Int = atoi(node->age0_20);
-    int age21_40Int = atoi(node->age21_40);
-    int age41_60Int = atoi(node->age41_60);
-    int age61Int = atoi(node->age61);
+char* printRange(agesRangePtr* node, int k) {
+
+    int age0_20Int = atoi((*node)->age0_20);
+    int age21_40Int = atoi((*node)->age21_40);
+    int age41_60Int = atoi((*node)->age41_60);
+    int age61Int = atoi((*node)->age61);
     int total = age0_20Int + age21_40Int + age41_60Int + age61Int;
+
+    freeagesRangePtr(node);
 
     int arINT[4];
     arINT[0] = age0_20Int;
@@ -250,23 +253,77 @@ void printRange(agesRangePtr node, int k) {
     // printf("21-40: %.2f\n", (float)(((float)age21_40Int*(float)100)/(float)total) );
     // printf("41-60: %.2f\n", (float)(((float)age41_60Int*(float)100)/(float)total) );
     // printf("60+: %.2f\n", (float)(((float)age61Int*(float)100)/(float)total) );
+    if(k>0) {
+        char* strConcat = malloc( (4*15)*sizeof(char) );
+        strcpy(strConcat, arStr[3]);
+        strcat(strConcat, ": ");
 
-    int i=3;
-    while(i>=0 && k>0) {
-        printf("%s: %.2f%%\n", arStr[i], (float)(((float)arINT[i]*(float)100)/(float)total));
-        k--;
-        i--;
-    }
+        char* floatStr = malloc( 12*sizeof(char) );
+        
+        // int integerPart = (float)(((float)arINT[3]*(float)100)/(float)total);
+        // float floatPart = (float)(((float)arINT[3]*(float)100)/(float)total) - integerPart;
+        // int integerPart2 = trunc(floatPart*10000);
+        // sprintf(floatStr, "%d.%04d", integerPart, integerPart2);
+        
+        sprintf(floatStr, "%.2f", (float)(((float)arINT[3]*(float)100)/(float)total));
+        
+        strcat(strConcat, floatStr);
+        strcat(strConcat, "%");
+        strcat(strConcat, "\n");
 
-    for(int i=0; i<4; i++) {
-        free(arStr[i]);
+
+        int tmpI=2;
+        int tmpK=k-1;
+        while(tmpI>=0 && tmpK>0) {
+
+            free(floatStr);
+            
+            strcat(strConcat, arStr[tmpI]);
+            strcat(strConcat, ": ");
+
+            floatStr = malloc( 12*sizeof(char) );
+            sprintf(floatStr, "%.2f", (float)(((float)arINT[tmpI]*(float)100)/(float)total));
+            strcat(strConcat, floatStr);
+            strcat(strConcat, "%");
+            strcat(strConcat, "\n");
+            
+            tmpK--;
+            tmpI--;
+        }
+
+        // printf("strConcat is %s\n", strConcat);
+
+        free(floatStr);
+        
+        // int i=3;
+        // while(i>=0 && k>0) {
+        //     printf("%s: %.2f%%\n", arStr[i], (float)(((float)arINT[i]*(float)100)/(float)total));
+        //     k--;
+        //     i--;
+        // }
+
+        for(int i=0; i<4; i++) {
+            free(arStr[i]);
+        }
+        free(arStr);
+
+        return strConcat;
+
     }
-    free(arStr);
+    else {
+        for(int i=0; i<4; i++) {
+            free(arStr[i]);
+        }
+        free(arStr);
+
+        return NULL;
+    }
+    
 
 }
 
 // replace root with last inserted
-void printKlargestItems(MaxHeapPtr tree, int k, int *id){
+char* printKlargestItems(MaxHeapPtr tree, int k, int *id){
 
     // printf("I am going to print the %d largest items of Heap:\n", k);
     // printMaxHeapNode(tree->root, 0); printf("\n\n\n");
@@ -279,7 +336,7 @@ void printKlargestItems(MaxHeapPtr tree, int k, int *id){
         HeapNodePtr father = NULL;
         HeapNodePtr tmp = getNodeWithId(tree->root, (*id)--, &father);
 
-        printf("Age %s appeared %d\n", tree->root->occurence, tree->root->total);
+        // printf("Age %s appeared %d\n", tree->root->occurence, tree->root->total);
         uploadRangeStats(&statistic, tree->root->occurence, tree->root->total);
 
         if( tmp==NULL || strcmp(tmp->occurence, tree->root->occurence)==0 ){
@@ -314,8 +371,8 @@ void printKlargestItems(MaxHeapPtr tree, int k, int *id){
         reheapify( &(tree->root) );
     }
 
-    printRange(statistic, k);
-    freeagesRangePtr(&statistic);
+    return printRange(&statistic, k);
+    // freeagesRangePtr(&statistic);
 
 }
 

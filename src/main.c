@@ -4,6 +4,11 @@
 #include "../headers/pipes.h"
 #include "../headers/fatherFunctions.h"
 #include "../headers/statistics.h"
+#include "../headers/signals.h"
+
+// workerDataNode* WorkersArr;
+
+int mySignalFlag=1;
 
 int main(int argc, char **argv)
 {
@@ -31,11 +36,17 @@ int main(int argc, char **argv)
     closedir(dir);
 
 
-    workerDataNode* WorkersArr = NULL;
+    WorkersArr = NULL;
     if ( (WorkersArr = malloc(numWorkers*sizeof(workerDataNode*))) == NULL ) {
         perror("WorkersArr malloc");
         exit(1);
     }
+
+    termination = 0;
+    sigkill = 0;
+    struct sigaction *act = malloc(sizeof(struct sigaction));
+    HandlerInit(act, handler);
+    // signal(SIGTERM, &simplehandler);
 
     pid_t pid = 0;
     for (int i=0; i < numWorkers; i++) {
@@ -83,6 +94,8 @@ int main(int argc, char **argv)
             free(fiforead);
             free(fifowrite);
             free(input_dir);
+
+            free(act);
             
             exit(0);
         }
@@ -96,8 +109,23 @@ int main(int argc, char **argv)
         }
     }
 
-    sendCountriesToWorkers(WorkersArr, input_dir, numWorkers, bufferSize);
+    // countries for every pid
+    CountryList* countriesListArray = malloc(numWorkers*sizeof(CountryList));
+    for (int i=0; i < numWorkers; i++) {
+        // countriesListArray[i]=malloc(sizeof(countryList));
+        countriesListArray[i]=initcountryList();
+    }
 
+    sendCountriesToWorkers(WorkersArr, input_dir, numWorkers, bufferSize, countriesListArray);
+
+    printf("PID and countries arr:\n");
+    for (int i=0; i < numWorkers; i++) {
+        printf("For i %d -> %d\n", i, WorkersArr[i]->pid);
+        printCountryList(countriesListArray[i]);
+    }
+
+
+    // get statistics
     for (int i=0; i < numWorkers; i++) {
         for( ; ; ) {
 
@@ -153,16 +181,18 @@ int main(int argc, char **argv)
 
 
     // Querries
-    FatherQuerries(WorkersArr, numWorkers, bufferSize);
-    // while(getline(stdin)) {
-    //     send wy
-    // }
-
+    FatherQuerries(WorkersArr, numWorkers, bufferSize, countriesListArray);
 
  
     for(int i=0; i < numWorkers; i++) {
         wait(NULL);
     }
+    
+    for (int i=0; i < numWorkers; i++) {
+        emptycountryList( &(countriesListArray[i]) );
+        free(countriesListArray[i]);
+    }
+    free(countriesListArray);
 
     for(int i=0; i < numWorkers; i++) {
 
@@ -172,10 +202,15 @@ int main(int argc, char **argv)
         unlink(WorkersArr[i]->fifoRead);
         unlink(WorkersArr[i]->fifoWrite);
 
+        close( WorkersArr[i]->fdRead );
+        close( WorkersArr[i]->fdWrite );
+
         emptyworkerNode(&(WorkersArr[i]));
     
     }
     free(WorkersArr);
+
+    free(act);
 
     free(input_dir);
     return 0;

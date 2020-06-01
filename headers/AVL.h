@@ -46,3 +46,4 @@ void    RL_Rotation(AVLNodePtr*);
 void    LR_Rotation(AVLNodePtr*);
 int     getUnhealed(AVLNodePtr);
 bool    UpdateExitDate(AVLNodePtr*, char*, char*);
+void    get_exited_nodes(AVLNodePtr, int*, char*, char*, char*, char*);

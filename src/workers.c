@@ -87,6 +87,7 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     CountryList cL = initcountryList();
     characteristic charsList = initChar();
     Linked_List ListOfPatients = initlinkedList();
+    Linked_List ListOfEXITPatients = initlinkedList();
 
     for( ; ; ){ // read countries
         
@@ -147,7 +148,7 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
                 size_t size = 0;
                 while( getline(&buffer, &size, fp)>=0 ) {
 
-                    inputPatientsToStructures(buffer, &(ListOfPatients), entry->d_name, tmpNode->country, &charsForDateFile);  // every line ends with /n
+                    inputPatientsToStructures(buffer, &(ListOfPatients), entry->d_name, tmpNode->country, &charsForDateFile, &ListOfEXITPatients);  // every line ends with /n
                     
                     free(buffer);
                     buffer = NULL;
@@ -184,6 +185,20 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     sendMessage(wfd, "OK", bufferSize);
 
 
+    // printLinkedList(ListOfEXITPatients);
+    // check if EXITS exist in ENTRIES
+    listNode looker = ListOfEXITPatients->front;
+    while(looker!=NULL) {
+
+        // printRecord(looker->item);
+
+        updateExitDate(&ListOfPatients, looker->item);
+
+        looker = looker->next;
+    }
+
+
+    // printLinkedList(ListOfPatients);
     // printCountryList(cL);
 
     // input to Data Structures
@@ -220,7 +235,7 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
             break;
         }
         
-        printf("Querry %s\n", readed);
+        // printf("Querry %s\n", readed);
         
         if(strcmp(readed, "/listCountries")==0) {
             // print countries with pid
@@ -258,48 +273,45 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
             char* ind5 = strtok(NULL," ");
 
             if( strcmp(instruct, "/diseaseFrequency")==0 ){ // diseaseFrequency virusName date1 date2 [country]
-                // instruct diseaseFrequency
-                // ind1     virusName has to be not NULL
-                // ind2     date1 has to be not NULL
-                // ind3     date2 has to be not NULL
-                // ind4     country can be NULL
-                if( ind1==NULL || ind2==NULL || ind3==NULL ){
-                    printf("Need to provide proper variables.\n\n");
+
+                if( ind4==NULL ){ // didn't give country
+                    
+                    int res = diseaseFrequencyNoCountry(HT_disease, ind1, ind2, ind3);
+                    char* newInt = malloc(12);
+                    sprintf(newInt, "%d", res);
+                    
+                    sendMessage(wfd, newInt, bufferSize);
+                    free(newInt);
+
                 }
                 else{
-                    int compDat = compareDates(ind2, ind3);
-                    if(compDat!=0 && compDat!=2){
-                        printf("Give correct dates.\n\n");
-                    }
-                    else{
-                        if( ind4==NULL ){ // didn't give country
-                            
-                            int res = diseaseFrequencyNoCountry(HT_disease, ind1, ind2, ind3);
-                            char* newInt = malloc(12);
-                            sprintf(newInt, "%d", res);
-                            
-                            sendMessage(wfd, newInt, bufferSize);
-                            free(newInt);
+                    
+                    int res = diseaseFrequencyCountry(HT_country, ind1, ind4, ind2, ind3);
+                    char* newInt = malloc(12);
+                    sprintf(newInt, "%d", res);
+                    sendMessage(wfd, newInt, bufferSize);
+                    free(newInt);
 
-                        }
-                        else{
-                            
-                            int res = diseaseFrequencyCountry(HT_country, ind1, ind4, ind2, ind3);
-                            if(res!=0) {
-                                printf("%d\n", res);
-                            }
-
-                        }
-                    }
                 }
+
             }
             else if(strcmp(instruct, "/topk-AgeRanges")==0) {
                 if( ind5==NULL ){
-                    printf("Need to provide proper variables.\n\n");
+                    printf("Need to provide proper variables.\n");
+                    sendMessage(wfd, "WRONG", bufferSize);
                 }
                 else {
                     
-                    topkAgeRanges(HT_country, ind1, ind2, ind3, ind4, ind5);
+                    char *returned = topkAgeRanges(HT_country, ind1, ind2, ind3, ind4, ind5);
+
+                    if(returned!=NULL) {
+                        sendMessage(wfd, returned, bufferSize);
+                    }
+                    else {
+                        sendMessage(wfd, "WRONG", bufferSize);
+                    }
+
+                    free(returned);
                     
                 }
             }
@@ -318,6 +330,60 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
                 free(receive);
 
             }
+            else if(strcmp(instruct, "/numPatientAdmissions")==0) {
+
+                    if(ind4==NULL) {    // no country
+                        countrylistNode node = cL->front;
+                        while(node!=NULL) {
+                            
+                            printf("%s %d\n", node->country, diseaseFrequencyCountry(HT_country, ind1, node->country, ind2, ind3));
+                            node = node->next;
+                        }
+                    }
+                    else {
+                        printf("%s %d\n", ind4, diseaseFrequencyCountry(HT_country, ind1, ind4, ind2, ind3));
+                    }
+
+            }
+            else if(strcmp(instruct, "/numPatientDischarges")==0) {
+                if(ind4==NULL) {    // no country
+                    countrylistNode node = cL->front;
+                    while(node!=NULL) {
+                        char* tmp =numPatientDischargesCountry(HT_country, ind1, node->country, ind2, ind3);
+                        // printf("Country %s %s\n", node->country,  tmp);
+                        
+                        char* wholeStr = malloc( (strlen(node->country)+2+strlen(tmp))*sizeof(char) );
+                        strcpy(wholeStr, node->country);
+                        strcat(wholeStr, " ");
+                        strcat(wholeStr, tmp);
+
+                        sendMessage(wfd, wholeStr, bufferSize);
+
+                        free(wholeStr);
+                        free(tmp);
+                        node = node->next;
+                    }
+                    sendMessage(wfd, "OK", bufferSize);
+                }
+                else {
+                    // printf("EIMAI EDO me ind4 %s\n", ind4);
+                    char* tmp =numPatientDischargesCountry(HT_country, ind1, ind4, ind2, ind3);
+                    // printf("tmp %s\n", tmp);
+                    if(strcmp(tmp, "0")==0) {
+                        sendMessage(wfd, "NONE", bufferSize);
+                        free(tmp);
+                    }
+                    else {
+                        char* wholeStr = malloc( (strlen(ind4)+2+strlen(tmp))*sizeof(char) );
+                        strcpy(wholeStr, ind4);
+                        strcat(wholeStr, " ");
+                        strcat(wholeStr, tmp);
+                        sendMessage(wfd, wholeStr, bufferSize);
+                        free(wholeStr);
+                        free(tmp);
+                    }
+                }
+            }
         
         }
 
@@ -329,18 +395,22 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     
     freeStats(charsList);
 
+    emptyLinkedList(&ListOfEXITPatients);
+    free(ListOfEXITPatients);
+
     // printLinkedList(ListOfPatients);
     emptyLinkedList(&ListOfPatients);
     free(ListOfPatients);
 
     emptycountryList(&cL);
     free(cL);
+
+    // printf("I am worker %d and my mySignalFlag is %d\n", getpid(), mySignalFlag);
+
     return 0;
 }
 
-int inputPatientsToStructures(char* line, Linked_List *ListOfPatients, char* date, char* country, StatisticsList* charsForDateFile) {
-
-    Linked_List ListOfEXITPatients = initlinkedList();
+int inputPatientsToStructures(char* line, Linked_List *ListOfPatients, char* date, char* country, StatisticsList* charsForDateFile, Linked_List *ListOfEXITPatients) {
 
     char* tmp = strdup(line);
     char* tok = strtok(tmp, " ");
@@ -357,21 +427,9 @@ int inputPatientsToStructures(char* line, Linked_List *ListOfPatients, char* dat
     }
     else {
 
-        addNode(&ListOfEXITPatients, pR);
+        addNode(ListOfEXITPatients, pR);
 
     }
-
-    // check if EXITS exist in ENTRIES
-    listNode looker = ListOfEXITPatients->front;
-    while(looker!=NULL) {
-
-        updateExitDate(ListOfPatients, looker->item);
-
-        looker = looker->next;
-    }
-
-    emptyLinkedList(&ListOfEXITPatients);
-    free(ListOfEXITPatients);
 
     free(tmp);
     return 0;

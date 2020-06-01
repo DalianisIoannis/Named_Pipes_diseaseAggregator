@@ -37,7 +37,7 @@ StatisticsList initStatisticsList(){
     return ll;
 }
 
-void emptyStatisticsList(StatisticsList *ll){
+void emptyStatisticsList(StatisticsList *ll) {
 
     StatsNode tmp;
     while ( (*ll)->front!=NULL ){
@@ -115,6 +115,7 @@ void informCharList(StatisticsList* list, patientRecord pR){
         llNode->item->age21_40 = strdup("0");
         llNode->item->age41_60 = strdup("0");
         llNode->item->age60 = strdup("0");
+        
         char* pRAge = strdup(pR->age);
         int intpRage = atoi(pRAge);
         // printf("Age is %d\n", intpRage);
@@ -164,7 +165,7 @@ void printStat(characteristic cc){
 
 void printStatList(StatisticsList list){
     StatsNode tmp = list->front;
-    while(tmp!=NULL){
+    while(tmp!=NULL) {
         printStat(tmp->item);
         tmp = tmp->next;
     }

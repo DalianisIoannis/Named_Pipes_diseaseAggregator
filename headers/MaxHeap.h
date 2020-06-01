@@ -20,7 +20,8 @@ typedef agesRange* agesRangePtr;
 agesRangePtr initAgeRangeStruct();
 void freeagesRangePtr(agesRangePtr*);
 void uploadRangeStats(agesRangePtr*, char*, int);
-void printRange(agesRangePtr, int);
+// void printRange(agesRangePtr, int);
+char* printRange(agesRangePtr* node, int k);
 
 typedef struct HeapNode{
     char    *occurence;
@@ -48,5 +49,5 @@ bool searchAllexisting(HeapNodePtr*, char*);
 void findParentOfInsertedNode(HeapNodePtr, int, HeapNodePtr*);
 void insertNodetoMaxHeap(HeapNodePtr*, HeapNodePtr);
 void reheapify(HeapNodePtr*);
-void printKlargestItems(MaxHeapPtr, int, int*);
+char* printKlargestItems(MaxHeapPtr, int, int*);
 HeapNodePtr getNodeWithId(HeapNodePtr, int, HeapNodePtr*);

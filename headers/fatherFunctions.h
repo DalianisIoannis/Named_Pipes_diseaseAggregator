@@ -3,5 +3,5 @@
 #include "./general.h"
 #include "./workers.h"
 
-int sendCountriesToWorkers(workerDataNode*, char* inDir, int, int);
-void FatherQuerries(workerDataNode*, int, int);
+int sendCountriesToWorkers(workerDataNode*, char* inDir, int, int, CountryList*);
+void FatherQuerries(workerDataNode*, int, int, CountryList*);

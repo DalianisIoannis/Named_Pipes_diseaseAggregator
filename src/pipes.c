@@ -12,7 +12,8 @@ int sendMessage(int fd, char* buf, int buf_size){
         write(fd, str+(i*buf_size), buf_size);
     }
     if(stSize%buf_size){
-        write(fd, str+(stSize-stSize%buf_size), buf_size);
+        // write(fd, str+(stSize-stSize%buf_size), buf_size);
+        write(fd, str+(stSize-stSize%buf_size), stSize%buf_size);
     }
 
     for(int i=0; i<bufLen/buf_size; i++){
@@ -36,7 +37,8 @@ char* receiveMessage(int fd, char* buf, int buf_size){
         memcpy(str+(i*buf_size), buf, buf_size);
     }
     if(stSize%buf_size!=0){
-        read(fd, buf, buf_size);
+        // read(fd, buf, buf_size);
+        read(fd, buf, stSize%buf_size);
         memcpy(str+(stSize/buf_size)*buf_size, buf, stSize-(stSize/buf_size)*buf_size);
     }
     return_bufSize = (int)strtol(str, NULL, 10);

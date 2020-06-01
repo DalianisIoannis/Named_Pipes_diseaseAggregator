@@ -80,9 +80,15 @@ bool updateExitDate(Linked_List *ll, patientRecord pR){
         // if( strcmp(tmp->item->recordId, pR->recordId)==0 && strcmp(tmp->item->country, pR->country)==0  && strcmp(tmp->item->diseaseID, pR->diseaseID)==0 && strcmp(tmp->item->patientLastName, pR->patientLastName)==0 ){
         if( strcmp(tmp->item->recordId, pR->recordId)==0 ){
 
-            int comparer = compareDates(tmp->item->entryDate, pR->exitDate);
+            // printf("Found %s\n", tmp->item->recordId);
+
+            // printf("tmp->item->entryDate %s pR->exitDate %s\n", tmp->item->entryDate, pR->entryDate);
+
+            // int comparer = compareDates(tmp->item->entryDate, pR->exitDate);
+            int comparer = compareDates(tmp->item->entryDate, pR->entryDate);
             if( comparer==0 || comparer==2 ){
-                changePatientExitDate( &(tmp->item), pR->exitDate );
+                changePatientExitDate( &(tmp->item), pR->entryDate );
+                // printRecord(tmp->item);
             }
             else{
                 printf("Can't have exited on that date!\n");

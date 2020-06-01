@@ -1,4 +1,5 @@
 #pragma once
+
 #include "./countryList.h"
 #include "./general.h"
 #include "./linkedList.h"
@@ -18,9 +19,12 @@ typedef struct workerData{
 } workerData;
 typedef workerData *workerDataNode;
 
+workerDataNode* WorkersArr;
+
+// int mySignalFlag=1;
 
 void printWorkerNode(workerDataNode);
 workerDataNode makeWorkerArCell(pid_t);
 void emptyworkerNode(workerDataNode*);
 int WorkerRun(char*, int, int, int, workerDataNode);
-int inputPatientsToStructures(char*, Linked_List*, char* date, char* country, StatisticsList*);
+int inputPatientsToStructures(char*, Linked_List*, char* date, char* country, StatisticsList*, Linked_List *);

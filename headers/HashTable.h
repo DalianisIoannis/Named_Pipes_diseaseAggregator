@@ -47,7 +47,10 @@ int     diseaseFrequencyCountry(HashTable, char*, char*, char*, char*);
 void    numCurrentPatients(HashTable, char*);
 bool    inputLLtoHT(Linked_List Entries, HashTable HT_in, int ind);
 int     accessSpecificBucketAndPrintTotalOfOccurences(hashBucket, char*, char*, char*, char*);
-void    accesBucketForKAges(hashBucket, int, char*, char*, char*, char*);
-void    topkAgeRanges(HashTable, char*, char*, char*, char*, char*);
+char*   accesBucketForKAges(hashBucket, int, char*, char*, char*, char*);
+char*   topkAgeRanges(HashTable, char*, char*, char*, char*, char*);
 void    addAVLnodesToHeapForAges(AVLNodePtr, MaxHeapPtr, int*, char*, char*, char*);
 void    callAgeBucket(hashBucket, char*);
+
+int returnExitedPatients(hashBucket HtB, char *country, char *date1, char* date2, char *virus);
+char* numPatientDischargesCountry(HashTable HT, char *virusName, char *country, char *date1, char* date2);
