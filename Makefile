@@ -23,6 +23,7 @@ $(EXECUTABLE): $(OBJ)
 clean:
 	rm -f $(ODIR)/*.o
 	rm -f $(EXECUTABLE)
+	rm -f ./logFiles/log*
 
 script:
 	./create_infiles.sh "./Assets/countriesFile.txt" "./Assets/diseasesFile.txt" "input_dir" 7 8

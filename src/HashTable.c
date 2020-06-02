@@ -219,38 +219,20 @@ void addAVLnodesToHeapForAges(AVLNodePtr node, MaxHeapPtr Heap, int *id, char* d
     }
     else {
         if( node->left!=NULL ){
-            // int compd1 = compareDates(date1, node->left->item->entryDate);
-            // if( compd1==0 || compd1==2 ){
-                addAVLnodesToHeapForAges(node->left, Heap, id, date1, date2, disease);
-            // }
+            addAVLnodesToHeapForAges(node->left, Heap, id, date1, date2, disease);
         }
         if( node->right!=NULL ){
-            // int compd2 = compareDates(date1, node->right->item->entryDate);
-            // if( compd2==0 || compd2==2 ){
-                addAVLnodesToHeapForAges(node->right, Heap, id, date1, date2, disease);
-            // }
+            addAVLnodesToHeapForAges(node->right, Heap, id, date1, date2, disease);
         }
-        // printf("node->item->entryDate is %s\n", node->item->entryDate);
         int compd3 = compareDates(date1, node->item->entryDate);    // has to be 0 or 2
         int compd4 = compareDates(date2, node->item->entryDate);    // has to be 0 or 1
-        // printf("compd3 is %d and compd4 is %d\n", compd3, compd4);
         if( (compd3==0 || compd3==2) && (compd4==0 || compd4==1) ){
             if(strcmp(node->item->diseaseID, disease)==0){
                 
-                // printf("Node disease is %s\n", node->item->diseaseID);
-                // printf("\nGoing to add %s.\n", node->item->diseaseID);
-                // printf("So far Heap:\n");
-                // printMaxHeapNode(Heap->root, 0);  printf("\n");
                 addMaxHeapNode(Heap, node->item->age, id);
 
             }
         }
-        // printf("KOMVOS MESA\n");
-        // printf("disease %s\n", node->item->diseaseID);
-        // printf("country %s\n", node->item->country);
-        // printf("age %s\n", node->item->age);
-        // addAVLnodesToHeapForAges(node->left, Heap);
-        // addAVLnodesToHeapForAges(node->right, Heap);
     }
 }
 
@@ -348,11 +330,6 @@ char*  accesBucketForKAges(hashBucket HtB, int k, char* country, char* disease, 
             }
             else if(i%2==0){
                 if(strcmp((char*)HtB->arr[i], country)==0) {
-                    
-                    // printf("FOUND %s in i %d \n", (char*)HtB->arr[i], i);
-                    // printf("\tAVL tree of bucket\n");
-                    // printAVLTree(HtB->arr[i+1]);
-                    // printf("\n");
 
                     MaxHeapPtr MaxHeapTree = initMaxHeap();
                     if(MaxHeapTree==NULL){
@@ -449,11 +426,6 @@ int accessSpecificBucketAndPrintTotalOfOccurences(hashBucket HtB, char *countr_o
     // and find is virus
     if(HtB!=NULL){
         for(int i=0; i<HtB->totalValues; i+=2){
-        // for(int i=0; i<HtB->totalValues; i++){
-            // if(HtB->arr[i]==NULL && i%2==0) {
-            //     // printf("\n\tPosition %d has value %p.\n", i, HtB->arr[i]);
-            // }
-            // else if(i%2==0){
             if(HtB->arr[i]!=NULL){
                 if(strcmp(HtB->arr[i], countr_or_disease)==0){
                     // printf("\n\tPosition %d has value %s and i am looking for %s.\n", i, (char*)HtB->arr[i], countr_or_disease);
@@ -468,19 +440,11 @@ int accessSpecificBucketAndPrintTotalOfOccurences(hashBucket HtB, char *countr_o
                     else{
                         get_child_nodes(AVLroot, &total, date1, date2, find );
                     }
-                                    
-                    // printf("\tAVL tree of bucket\n");
-                    // printAVLTree(tmpAVL); printf("\n");
 
-                    // printf("Virus %s has %d occurences from %s until %s.\n", countr_or_disease, total, date1, date2);
-                    // printf("%s %d\n", countr_or_disease, total);
-                    // printf("Virus %s has %d occurences in %s from %s until %s.\n", find, total, countr_or_disease, date1, date2);
-                    // printf("%s %d\n", find, total);
                     return total;
                 }
             }
         }
-        // if(HtB->next!=NULL){  printf("Next bucket:\n"); }
         return accessSpecificBucketAndPrintTotalOfOccurences(HtB->next, countr_or_disease, date1, date2, find);
     }
     return 0;

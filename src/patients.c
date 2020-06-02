@@ -53,12 +53,7 @@ void printRecord(patientRecord p){
     printf("\tentryDate \t%s\n", p->entryDate);
     printf("\tage \t%s\n", p->age);
     
-    // if(p->exitDate!=NULL) {
-        printf("\texitDate \t%s\n", p->exitDate);
-    // }
-    // else {
-    //     printf("\texitDate \t--\n");
-    // }
+    printf("\texitDate \t%s\n", p->exitDate);
 }
 
 void deleteRecord(patientRecord* p){
@@ -74,8 +69,6 @@ void deleteRecord(patientRecord* p){
 }
 
 void changePatientExitDate(patientRecord *p, char *date) {
-    // printRecord((*p));
     free( (*p)->exitDate );
     (*p)->exitDate = strdup(date);
-    // printRecord((*p));
 }

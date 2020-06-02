@@ -22,8 +22,6 @@ typedef struct str_node
     struct str_node *next;
 } str_node;
 
-
-
 typedef struct worker
 {
     pid_t pid;

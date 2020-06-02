@@ -22,9 +22,8 @@ typedef lList *Linked_List;
 
 
 Linked_List initlinkedList();
-bool addNode(Linked_List*, patientRecord);
-void emptyLinkedList(Linked_List*);
-void printLinkedList(Linked_List);
-// bool checkDup(Linked_List*, patientRecord);
-bool updateExitDate(Linked_List*, patientRecord);
-char* returnPatientifExists(Linked_List, char*);
+bool    addNode(Linked_List*, patientRecord);
+void    emptyLinkedList(Linked_List*);
+void    printLinkedList(Linked_List);
+bool    updateExitDate(const Linked_List*, patientRecord);
+char*   returnPatientifExists(Linked_List, char*);

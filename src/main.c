@@ -6,10 +6,6 @@
 #include "../headers/statistics.h"
 #include "../headers/signals.h"
 
-// workerDataNode* WorkersArr;
-
-int mySignalFlag=1;
-
 int main(int argc, char **argv)
 {
     // argv[0] ./diseaseAggregator
@@ -27,14 +23,11 @@ int main(int argc, char **argv)
 
     int bufferSize = atoi(argv[4]);
     int numWorkers = atoi(argv[2]);
-    printf("Number of Workers is %d.\n", numWorkers);
-    printf("Buffersize is %d.\n", bufferSize);
+    workerDataNode* WorkersArr;
     
     char *input_dir = strdup(argv[6]);
-    printf("Input Dir is %s.\n", input_dir);
     DIR* dir = opendir(input_dir);
     closedir(dir);
-
 
     WorkersArr = NULL;
     if ( (WorkersArr = malloc(numWorkers*sizeof(workerDataNode*))) == NULL ) {
@@ -46,7 +39,6 @@ int main(int argc, char **argv)
     sigkill = 0;
     struct sigaction *act = malloc(sizeof(struct sigaction));
     HandlerInit(act, handler);
-    // signal(SIGTERM, &simplehandler);
 
     pid_t pid = 0;
     for (int i=0; i < numWorkers; i++) {
@@ -68,7 +60,6 @@ int main(int argc, char **argv)
             sprintf(fifowrite, "./pipeFiles/writer_des%d", getpid());
 
             if ((wfd = open(fiforead, O_WRONLY)) == -1) {
-            // if ((wfd = open(WorkersArr[i]->fifoRead, O_WRONLY)) == -1) {
                 perror("open wfd");
 
             }
@@ -77,11 +68,6 @@ int main(int argc, char **argv)
             }
 
             WorkerRun(input_dir, bufferSize, rfd, wfd, WorkersArr[i]);
-
-            // char arr[bufferSize];
-            // char* readed = receiveMessage(rfd, arr, bufferSize);
-            // printf("%s\n", readed);
-            // free(readed);
 
             for(int j=0; j < i; j++) {
 
@@ -105,25 +91,16 @@ int main(int argc, char **argv)
             {
                 perror("makeWorkerArCell failed\n");
             }
-            sendMessage(WorkersArr[i]->fdWrite, "k", bufferSize);
         }
     }
 
     // countries for every pid
     CountryList* countriesListArray = malloc(numWorkers*sizeof(CountryList));
     for (int i=0; i < numWorkers; i++) {
-        // countriesListArray[i]=malloc(sizeof(countryList));
         countriesListArray[i]=initcountryList();
     }
 
     sendCountriesToWorkers(WorkersArr, input_dir, numWorkers, bufferSize, countriesListArray);
-
-    printf("PID and countries arr:\n");
-    for (int i=0; i < numWorkers; i++) {
-        printf("For i %d -> %d\n", i, WorkersArr[i]->pid);
-        printCountryList(countriesListArray[i]);
-    }
-
 
     // get statistics
     for (int i=0; i < numWorkers; i++) {
@@ -144,46 +121,8 @@ int main(int argc, char **argv)
         }
     }
 
-    // int maxfd;
-    // fd_set read_fds;
-
-    // for ( ;; ) {
-
-    //     FD_ZERO(&read_fds)
-
-    //     for (int i =0; i < numWorkers; i++) {
-    //         FD_SET(workers_arr[i].rfd, &read_fds);
-            
-    //     }
-
-    //     // find max rfd
-
-    //     select(maxfd + 1, &read_fds, null, null, null)
-
-    //     int fd
-    //     for (int i =0; i < numWorkers; i++) {
-    //         FD_ISSET(workers_arr[i].rfd, &read_fds) {
-    //             fd = workers_arr[i].rfd
-    //         }
-    //     }
-
-    //     statisticks = read(fd)
-    //     if (statistics == "OK") {
-    //         count ++;
-    //         if (count == numWorkers) {
-    //             break;
-    //         }
-    //         else {
-    //             //store statictis 
-    //         }
-    //     }
-    // }
-
-
-    // Querries
     FatherQuerries(WorkersArr, numWorkers, bufferSize, countriesListArray);
 
- 
     for(int i=0; i < numWorkers; i++) {
         wait(NULL);
     }
@@ -195,9 +134,6 @@ int main(int argc, char **argv)
     free(countriesListArray);
 
     for(int i=0; i < numWorkers; i++) {
-
-        // emptycountryList( &(WorkersArr[i]->PIDcountries) );
-        // free(WorkersArr[i]->PIDcountries);
 
         unlink(WorkersArr[i]->fifoRead);
         unlink(WorkersArr[i]->fifoWrite);
@@ -213,5 +149,6 @@ int main(int argc, char **argv)
     free(act);
 
     free(input_dir);
+
     return 0;
 }

@@ -7,6 +7,7 @@
 #include "../headers/patients.h"
 #include "../headers/statistics.h"
 #include "../headers/HashTable.h"
+#include "../headers/signals.h"
 
 void printWorkerNode(workerDataNode node){
     printf("Worker Node:\n");
@@ -27,8 +28,6 @@ workerDataNode makeWorkerArCell(pid_t pid){
     
     cell->pid = pid;
     
-    // cell->PIDcountries = initcountryList();
-    
     cell->fifoRead = malloc( (strlen("./pipeFiles/reader_des")+12) );
     sprintf((cell)->fifoRead, "./pipeFiles/reader_des%d", pid);
     if (mkfifo(cell->fifoRead, 0666) == -1) {
@@ -46,30 +45,20 @@ workerDataNode makeWorkerArCell(pid_t pid){
     if ((cell->fdRead = open(cell->fifoRead, O_RDONLY)) == -1) {
         perror("open");
     }
-    // close( cell->fdRead );
     
     if ((cell->fdWrite = open(cell->fifoWrite, O_WRONLY)) == -1) {
         perror("open");
 
     }
-    // close( cell->fdWrite );
 
     return cell;
 }
 
 void emptyworkerNode(workerDataNode *wL){
     
-    // emptycountryList( &((*wL)->PIDcountries) );
-    // free((*wL)->PIDcountries);
-
-    // unlink((*wL)->fifoRead);
     free((*wL)->fifoRead);
 
-    // unlink((*wL)->fifoWrite);
     free((*wL)->fifoWrite);
-
-    // close( wL->fdRead );
-    // close( wL->fdWrite );
     
     free(*wL);
 
@@ -77,17 +66,19 @@ void emptyworkerNode(workerDataNode *wL){
 
 int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node){
 
-    char arr[bufferSize];
-    char* readed = receiveMessage(rfd, arr, bufferSize);
-    struct dirent *entry;
-    printf("%s\n", readed);
-    free(readed);
+    requestStruct* reQS = malloc(sizeof(requestStruct));
+    reQS->TOTAL=0;
+    reQS->SUCCESS=0;
 
-    // node->PIDcountries = initcountryList();
+    char arr[bufferSize];
+    struct dirent *entry;
+    char* readed;
+
     CountryList cL = initcountryList();
     characteristic charsList = initChar();
     Linked_List ListOfPatients = initlinkedList();
     Linked_List ListOfEXITPatients = initlinkedList();
+    CountryList listOfDateFiles = initcountryList();
 
     for( ; ; ){ // read countries
         
@@ -112,7 +103,6 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
         char* CountryDir = malloc( (strlen(inDir)+strlen(tmpNode->country)+1)*sizeof(char) );
         strcpy(CountryDir, inDir);
         strcat(CountryDir, tmpNode->country);
-        // // printf("Final file is %s\n", CountryDir);
         
         DIR* dirr = opendir(CountryDir);
         
@@ -130,19 +120,18 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
             
                 StatisticsList charsForDateFile = initStatisticsList();
 
-                // printf("Date file %s\n", entry->d_name);
-
                 char* countryDateFile = malloc( (strlen(CountryDir)+strlen(entry->d_name)+1+1)*sizeof(char) );
                 strcpy(countryDateFile, CountryDir);
                 strcat(countryDateFile, "/");
                 strcat(countryDateFile, entry->d_name);
 
+                // printf("%s\n", countryDateFile);
+                addCountryListNode(&(listOfDateFiles), countryDateFile);
+
                 FILE *fp = fopen(countryDateFile, "r");
-                // 
                 if(fp==NULL) {
                     perror("FILE.");
                 }
-                // else { printf("Opened file %s\n", countryDateFile); }
                 
                 char* buffer = NULL;
                 size_t size = 0;
@@ -153,21 +142,16 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
                     free(buffer);
                     buffer = NULL;
                 }
-
                 // send statistics
-                // printStatList(charsForDateFile);
                 StatsNode tmpStatsNode = charsForDateFile->front;
                 while(tmpStatsNode!=NULL) {
 
                     char* stringStats = concatStats(tmpStatsNode->item);
-                    // send stats
                     sendMessage(wfd, stringStats, bufferSize);
                     free(stringStats);
 
                     tmpStatsNode = tmpStatsNode->next;
-
                 }
-                
                 emptyStatisticsList(&charsForDateFile);
 
                 free(countryDateFile);
@@ -184,22 +168,16 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
 
     sendMessage(wfd, "OK", bufferSize);
 
-
-    // printLinkedList(ListOfEXITPatients);
     // check if EXITS exist in ENTRIES
     listNode looker = ListOfEXITPatients->front;
     while(looker!=NULL) {
 
-        // printRecord(looker->item);
-
-        updateExitDate(&ListOfPatients, looker->item);
+        if(updateExitDate(&ListOfPatients, looker->item)==false) {
+            printf("ERROR\n");
+        }
 
         looker = looker->next;
     }
-
-
-    // printLinkedList(ListOfPatients);
-    // printCountryList(cL);
 
     // input to Data Structures
     int diseaseHashtableNumOfEntries = 8;
@@ -213,8 +191,6 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     }
 
     inputLLtoHT(ListOfPatients, HT_disease, 0);    // 0 for disease
-    
-    // printf("Hash Table of Diseases is:\n"); printHashTable(HT_disease);
 
     if( (HT_country = initHashTable(bucketSize, countryHashtableNumOfEntries))==NULL ){
         fprintf(stderr, "Couldn't allocate Hash Table. Abort...\n");
@@ -228,14 +204,87 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     // read from Father Querries
     for( ; ; ) { // read querries
         
+        if(mySignalFlagForSIGINT_SIGQUIT==-1) {
+            handleSIGINTSIGQUIT(mySignalFlagForSIGINT_SIGQUIT, cL, reQS);
+            mySignalFlagForSIGINT_SIGQUIT=0;
+        }
+
+        if(mySignalFlagForSIGINT_SIGQUIT==-2) {
+            // read new folder
+            StatisticsList charsForDateFile = initStatisticsList();
+            countrylistNode tmpNode = cL->front;
+            while(tmpNode!=NULL) {
+                char* CountryDir = malloc( (strlen(inDir)+strlen(tmpNode->country)+1)*sizeof(char) );
+                strcpy(CountryDir, inDir);
+                strcat(CountryDir, tmpNode->country);
+                
+                DIR* dirr = opendir(CountryDir);
+                
+                if (ENOENT == errno) {
+                    fprintf(stderr, "Directory does not exist!\n");
+                    return -1;
+                }
+                else if (!dirr) {
+                    fprintf(stderr, "opendir() failed for some other reason!\n");
+                    return -1;
+                }
+
+                while( (entry=readdir(dirr))!=NULL ) {
+                    if(strcmp(entry->d_name, ".")!=0 && strcmp(entry->d_name, "..")!=0) {
+                        char* countryDateFile = malloc( (strlen(CountryDir)+strlen(entry->d_name)+1+1)*sizeof(char) );
+                        strcpy(countryDateFile, CountryDir);
+                        strcat(countryDateFile, "/");
+                        strcat(countryDateFile, entry->d_name);
+
+                        // printf("%s\n", countryDateFile);
+
+                        int found=0;
+                        countrylistNode tmp = listOfDateFiles->front;
+                        while(tmp!=NULL){
+                            if(strcmp(tmp->country, countryDateFile)==0) {
+                                found=1;
+                            }
+                            tmp = tmp->next;
+                        }
+                        if(found==0) {
+                            printf("NEW %s\n", countryDateFile);
+                            addCountryListNode(&(listOfDateFiles), countryDateFile);
+                            FILE *fp = fopen(countryDateFile, "r");
+                            if(fp==NULL) {
+                                perror("FILE.");
+                            }
+                            char* buffer = NULL;
+                            size_t size = 0;
+                            while( getline(&buffer, &size, fp)>=0 ) {
+                                // inputPatientsToStructures(buffer, &(ListOfPatients), entry->d_name, tmpNode->country, &charsForDateFile, &ListOfEXITPatients);  // every line ends with /n
+                                free(buffer);
+                                buffer = NULL;
+                            }
+                            fclose(fp);
+                            free(buffer);
+                        }
+                        free(countryDateFile);
+                    }
+                }
+                free(CountryDir);
+                closedir(dirr);
+                tmpNode = tmpNode->next;
+            }
+            emptyStatisticsList(&charsForDateFile);
+            mySignalFlagForSIGINT_SIGQUIT=0;
+        }
+
         readed = receiveMessage(rfd, arr, bufferSize);
+        
 
         if(strcmp(readed, "OK")==0){
             free(readed);
             break;
         }
-        
-        // printf("Querry %s\n", readed);
+        else {
+            reQS->SUCCESS = reQS->SUCCESS+1;
+            reQS->TOTAL = reQS->TOTAL+1;
+        }
         
         if(strcmp(readed, "/listCountries")==0) {
             // print countries with pid
@@ -259,8 +308,6 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
             }
 
             sendMessage(wfd, "OK", bufferSize);
-
-            // printCountryList(cL);
 
         }
         else {
@@ -317,10 +364,7 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
             }
             else if(strcmp(instruct, "/searchPatientRecord")==0) {
 
-                // printf("search for id %s\n", ind1);
-                // printLinkedList(ListOfPatients);
                 char* receive = returnPatientifExists(ListOfPatients, ind1);
-                // printf("Got %s\n", receive);
                 if(receive!=NULL) {
                     sendMessage(wfd, receive, bufferSize);
                 }
@@ -336,12 +380,44 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
                         countrylistNode node = cL->front;
                         while(node!=NULL) {
                             
-                            printf("%s %d\n", node->country, diseaseFrequencyCountry(HT_country, ind1, node->country, ind2, ind3));
+                            int received = diseaseFrequencyCountry(HT_country, ind1, node->country, ind2, ind3);
+                            
+                            char* intTostr = malloc(12);
+                            sprintf(intTostr, "%d", received);
+
+                            char* strCatToRet = malloc(strlen(node->country)+strlen(intTostr)+1+1);
+                            strcpy(strCatToRet, node->country);
+                            strcat(strCatToRet, " ");
+                            strcat(strCatToRet, intTostr);
+
+                            sendMessage(wfd, strCatToRet, bufferSize);
+                            
+                            free(intTostr);
+                            free(strCatToRet);
                             node = node->next;
                         }
+                        sendMessage(wfd, "OK", bufferSize);
                     }
                     else {
-                        printf("%s %d\n", ind4, diseaseFrequencyCountry(HT_country, ind1, ind4, ind2, ind3));
+                        int received = diseaseFrequencyCountry(HT_country, ind1, ind4, ind2, ind3);
+                            
+                        if(received!=0) {
+                            char* intTostr = malloc(12);
+                            sprintf(intTostr, "%d", received);
+
+                            char* strCatToRet = malloc(strlen(ind4)+strlen(intTostr)+1+1);
+                            strcpy(strCatToRet, ind4);
+                            strcat(strCatToRet, " ");
+                            strcat(strCatToRet, intTostr);
+
+                            sendMessage(wfd, strCatToRet, bufferSize);
+                            
+                            free(intTostr);
+                            free(strCatToRet);
+                        }
+
+                        sendMessage(wfd, "OK", bufferSize);
+
                     }
 
             }
@@ -366,9 +442,9 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
                     sendMessage(wfd, "OK", bufferSize);
                 }
                 else {
-                    // printf("EIMAI EDO me ind4 %s\n", ind4);
+
                     char* tmp =numPatientDischargesCountry(HT_country, ind1, ind4, ind2, ind3);
-                    // printf("tmp %s\n", tmp);
+
                     if(strcmp(tmp, "0")==0) {
                         sendMessage(wfd, "NONE", bufferSize);
                         free(tmp);
@@ -398,15 +474,16 @@ int WorkerRun(char* inDir, int bufferSize, int rfd, int wfd, workerDataNode node
     emptyLinkedList(&ListOfEXITPatients);
     free(ListOfEXITPatients);
 
-    // printLinkedList(ListOfPatients);
     emptyLinkedList(&ListOfPatients);
     free(ListOfPatients);
+
+    emptycountryList(&listOfDateFiles);
+    free(listOfDateFiles);
 
     emptycountryList(&cL);
     free(cL);
 
-    // printf("I am worker %d and my mySignalFlag is %d\n", getpid(), mySignalFlag);
-
+    free(reQS);
     return 0;
 }
 

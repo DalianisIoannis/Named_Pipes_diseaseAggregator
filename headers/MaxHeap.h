@@ -18,10 +18,9 @@ typedef struct {
 typedef agesRange* agesRangePtr;
 
 agesRangePtr initAgeRangeStruct();
-void freeagesRangePtr(agesRangePtr*);
-void uploadRangeStats(agesRangePtr*, char*, int);
-// void printRange(agesRangePtr, int);
-char* printRange(agesRangePtr* node, int k);
+void    freeagesRangePtr(agesRangePtr*);
+void    uploadRangeStats(agesRangePtr*, char*, int);
+char*   printRange(agesRangePtr* node, int k);
 
 typedef struct HeapNode{
     char    *occurence;

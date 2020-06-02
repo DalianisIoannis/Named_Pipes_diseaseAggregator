@@ -77,9 +77,7 @@ do
                 idOfentry=$((RANDOM % id))
             fi
 
-            # entry=$id" "$state" "$(head /dev/urandom | tr -dc A-Za-z | head -c 13)" "$(head /dev/urandom | tr -dc A-Za-z | head -c 13)" "$(shuf -n 1 $country)" "$((RANDOM % 120))
             entry=$idOfentry" "$state" "${FN[$(($RANDOM % $lenght))]}" "${SN[$(($RANDOM % $lenght))]}" "$(shuf -n 1 $country)" "$((RANDOM % 120))
-            # echo $entry >> $3/$line/$date.txt
             echo $entry >> $3/$line/$date
             ((entryCounter++))
             ((id++))

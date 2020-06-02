@@ -19,9 +19,10 @@ typedef struct workerData{
 } workerData;
 typedef workerData *workerDataNode;
 
-workerDataNode* WorkersArr;
-
-// int mySignalFlag=1;
+typedef struct {
+    int TOTAL;
+    int SUCCESS;
+} requestStruct;
 
 void printWorkerNode(workerDataNode);
 workerDataNode makeWorkerArCell(pid_t);

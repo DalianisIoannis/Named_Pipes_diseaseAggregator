@@ -91,7 +91,6 @@ void insertNodetoMaxHeap(HeapNodePtr *root, HeapNodePtr new_node){
 }
 
 void compareFatherWithChild(HeapNodePtr *father, HeapNodePtr *child){
-    // printf("Compare father with virus %s and total occurences %d with child with virus %s and total occurences %d.\n", (*father)->occurence, (*father)->total, (*child)->occurence, (*child)->total);
     if( (*father)->total< (*child)->total ){
         int tmpInt;
         char *tmpStr;
@@ -240,30 +239,14 @@ char* printRange(agesRangePtr* node, int k) {
     arStr[3] = malloc(strlen("41-60")+1);
     strcpy(arStr[3], "60+");
 
-    // printf("prin\n");
-    // for(int i=0; i<4; i++) {
-    //     printf("%d for %s\n", arINT[i], arStr[i]);
-    // }
     selectionSort(arINT, 4, arStr);
-    // printf("meta\n");
-    // for(int i=0; i<4; i++) {
-    //     printf("%d for %s\n", arINT[i], arStr[i]);
-    // }
-    // printf("0-20: %.2f\n", (float)(((float)age0_20Int*(float)100)/(float)total) );
-    // printf("21-40: %.2f\n", (float)(((float)age21_40Int*(float)100)/(float)total) );
-    // printf("41-60: %.2f\n", (float)(((float)age41_60Int*(float)100)/(float)total) );
-    // printf("60+: %.2f\n", (float)(((float)age61Int*(float)100)/(float)total) );
+
     if(k>0) {
         char* strConcat = malloc( (4*15)*sizeof(char) );
         strcpy(strConcat, arStr[3]);
         strcat(strConcat, ": ");
 
         char* floatStr = malloc( 12*sizeof(char) );
-        
-        // int integerPart = (float)(((float)arINT[3]*(float)100)/(float)total);
-        // float floatPart = (float)(((float)arINT[3]*(float)100)/(float)total) - integerPart;
-        // int integerPart2 = trunc(floatPart*10000);
-        // sprintf(floatStr, "%d.%04d", integerPart, integerPart2);
         
         sprintf(floatStr, "%.2f", (float)(((float)arINT[3]*(float)100)/(float)total));
         
@@ -291,16 +274,7 @@ char* printRange(agesRangePtr* node, int k) {
             tmpI--;
         }
 
-        // printf("strConcat is %s\n", strConcat);
-
         free(floatStr);
-        
-        // int i=3;
-        // while(i>=0 && k>0) {
-        //     printf("%s: %.2f%%\n", arStr[i], (float)(((float)arINT[i]*(float)100)/(float)total));
-        //     k--;
-        //     i--;
-        // }
 
         for(int i=0; i<4; i++) {
             free(arStr[i]);

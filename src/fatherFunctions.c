@@ -1,6 +1,7 @@
 #include "../headers/pipes.h"
 #include "../headers/fatherFunctions.h"
 #include "../headers/workers.h"
+#include "../headers/signals.h"
 
 int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWorkers, int bufferSize, CountryList* ArForFather){
 
@@ -48,15 +49,32 @@ int sendCountriesToWorkers(workerDataNode* WorkerArray, char* inDir, int numWork
     return 0;
 }
 
-void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, CountryList* ArForFather) {
+int returnIforCountry(workerDataNode* WorkersArr, CountryList* WorkersCountries, char* country, int numWorkers) {
+
+    for (int i=0; i < numWorkers; i++) {
+
+        countrylistNode tmp = WorkersCountries[i]->front;
+        while(tmp!=NULL){
+            if(strcmp(country, tmp->country)==0) {
+                return i;
+            }
+            tmp = tmp->next;
+        }
+    
+    }
+    return -1;
+}
+
+void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, CountryList* WorkersCountries) {
+
     char *inputString = NULL, *buffer = NULL;
-    char *tmp; //, *ind1, *ind2, *instruct, *ind3, *ind4, *ind5, *ind6, *ind7;
+    char *tmp;
     size_t size = 0;
 
     printf("Select instruction.\n");
 
     while( getline(&buffer, &size, stdin)!=-1 ){
-        
+
         if( strcmp(buffer, "\n")!=0 ){
             inputString = strtok(buffer, "\n");
         }
@@ -77,7 +95,6 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
         else if(strcmp(tmp, "/listCountries")==0) {
     
             for(int i=0; i<numWorkers; i++) {
-                // printf("Child pid %d\n", WorkersArr[i]->pid);
 
                 sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
                 // read countries with pid
@@ -92,13 +109,9 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
                     }
 
                     printf("%s\n", readed);
-                    
                     free(readed);
-
                 }
-
             }
-
         }
         else {
 
@@ -139,38 +152,43 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
                         }
                         else{
                             
-                            for(int i=0; i<numWorkers; i++) {
+                            int position = returnIforCountry(WorkersArr, WorkersCountries, ind4, numWorkers);
+                            
+                            if(position!=-1) {
+                            // for(int i=0; i<numWorkers; i++) {
                                 
-                                sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                                sendMessage(WorkersArr[position]->fdWrite, tmp, bufferSize);
                                 
                                 char arr[bufferSize];
-                                char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);                                
+                                char* readed = receiveMessage(WorkersArr[position]->fdRead, arr, bufferSize);                                
                                 if(atoi(readed)!=0) {
                                     printf("%d\n", atoi(readed));
                                 }
                                 free(readed);
                             
+                            // }
                             }
-
                         }
                     }
                 }
             }
             else if(strcmp(instruct, "/topk-AgeRanges")==0) {
 
-                for(int i=0; i<numWorkers; i++) {
+                int position = returnIforCountry(WorkersArr, WorkersCountries, ind2, numWorkers);
+                if(position!=-1) {
+                // for(int i=0; i<numWorkers; i++) {
                     
-                    sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                    sendMessage(WorkersArr[position]->fdWrite, tmp, bufferSize);
 
                     char arr[bufferSize];
-                    char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
+                    char* readed = receiveMessage(WorkersArr[position]->fdRead, arr, bufferSize);
                     if( strcmp(readed, "WRONG")!=0 ) {
                         printf("%s\n", readed);
                     }
                     free(readed);
 
+                // }
                 }
-
             }
             else if(strcmp(instruct, "/searchPatientRecord")==0) {
 
@@ -189,8 +207,48 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
 
             }
             else if(strcmp(instruct, "/numPatientAdmissions")==0) {
-                for(int i=0; i<numWorkers; i++) {
-                    sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                if(ind4!=NULL) {
+                    int position = returnIforCountry(WorkersArr, WorkersCountries, ind4, numWorkers);
+                    if(position!=-1) {
+                        sendMessage(WorkersArr[position]->fdWrite, tmp, bufferSize);
+
+                        for( ; ; ) {
+                            char arr[bufferSize];
+                            char* readed = receiveMessage(WorkersArr[position]->fdRead, arr, bufferSize);
+
+
+                            if(strcmp(readed, "OK")==0){
+                                free(readed);
+                                break;
+                            }
+
+                            printf("%s\n", readed);
+                            
+                            free(readed);
+                        }
+                    }
+                }
+                else {
+                    for(int i=0; i<numWorkers; i++) {
+
+                        sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+
+                        for( ; ; ) {
+                            char arr[bufferSize];
+                            char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
+
+
+                            if(strcmp(readed, "OK")==0){
+                                free(readed);
+                                break;
+                            }
+
+                            printf("%s\n", readed);
+                            
+                            free(readed);
+                        }
+
+                    }
                 }
             }
             else if(strcmp(instruct, "/numPatientDischarges")==0) {
@@ -202,7 +260,7 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
                         for( ; ; ) {
 
                             char arr[bufferSize];
-                            char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);;
+                            char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);
 
                             if(strcmp(readed, "OK")==0){
                                 free(readed);
@@ -217,17 +275,20 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
                     }
                 }
                 else {
-                    for(int i=0; i<numWorkers; i++) {
-                        sendMessage(WorkersArr[i]->fdWrite, tmp, bufferSize);
+                    int position = returnIforCountry(WorkersArr, WorkersCountries, ind4, numWorkers);
+                    // for(int i=0; i<numWorkers; i++) {
+                    if(position!=-1) {
+                        sendMessage(WorkersArr[position]->fdWrite, tmp, bufferSize);
                         
                         char arr[bufferSize];
-                        char* readed = receiveMessage(WorkersArr[i]->fdRead, arr, bufferSize);;
+                        char* readed = receiveMessage(WorkersArr[position]->fdRead, arr, bufferSize);;
 
                         if(strcmp(readed, "NONE")!=0){
                             printf("%s\n", readed);
                         }
                         
                         free(readed);
+                    // }
                     }
                 }
             }
@@ -247,9 +308,7 @@ void FatherQuerries(workerDataNode* WorkersArr, int numWorkers, int bufferSize, 
     buffer = NULL;
 
     for(int i=0; i<numWorkers; i++) {
-
         sendMessage(WorkersArr[i]->fdWrite, "OK", bufferSize);
-
     }
 
 }

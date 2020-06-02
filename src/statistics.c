@@ -99,9 +99,7 @@ void informCharList(StatisticsList* list, patientRecord pR){
             found=true;
             break;
         }
-        // else{
-            tmp = tmp->next;
-        // }
+        tmp = tmp->next;
     }
     if(found==false){   // did not find same
         // only here input date country virus
@@ -118,7 +116,6 @@ void informCharList(StatisticsList* list, patientRecord pR){
         
         char* pRAge = strdup(pR->age);
         int intpRage = atoi(pRAge);
-        // printf("Age is %d\n", intpRage);
         if(intpRage<=20){
             free(llNode->item->age0_20);
             llNode->item->age0_20 = strdup("1");
@@ -192,8 +189,6 @@ char* concatStats(characteristic strChars){
 }
 
 void printStatsFromConcat(char* stat) {
-    
-    // printf("STAT RETURNED %s\n", stat);
     
     char* tok = strtok(stat, " ");
     printf("fileName is %s\n", tok);

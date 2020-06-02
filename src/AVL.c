@@ -336,11 +336,6 @@ bool UpdateExitDate(AVLNodePtr *node, char *Id, char *date){
     return false;
 }
 
-
-
-
-
-
 void get_exited_nodes(AVLNodePtr node, int *total, char *d1, char *d2, char *country, char* virus) {
     // for returnExitedPatients
     // i am in HT_country and comparer is virus name
@@ -348,23 +343,15 @@ void get_exited_nodes(AVLNodePtr node, int *total, char *d1, char *d2, char *cou
         return;
     }
     else {
-        // if(strcmp(node->item->country, "Greece")==0) {
-        //     recPrintAVLNode(node, 0);
-        //     printf("EIMAI STO GREECEvirus %s and looking for %s virus\n", node->item->diseaseID, virus);
-        // }
+
         if(strcmp(node->item->diseaseID, virus)==0) {
-            // printf("virus %s and looking for %s virus\n", node->item->diseaseID, virus);
-            // printf("node->item->exitDate %s\n", node->item->exitDate);
-            // printf("node->item->recordId %s\n", node->item->recordId);
+
             if(strcmp(node->item->exitDate, "--")==0) {
             }
             else {
                 int compare1 = compareDates(d1, node->item->exitDate);
-                // printf("d1 is %s and node->item->exitDate %s and compare1 %d\n", d1, node->item->exitDate, compare1);
                 int compare2 = compareDates(d2, node->item->exitDate);
-                // printf("d2 is %s and node->item->exitDate %s and compare2 %d\n", d2, node->item->exitDate, compare2);
                 if( (compare1==0 || compare1==2) && (compare2==0 || compare2==1) ){
-                    // printRecord(node->item);
                     *total = *total + 1;
                 }
             }

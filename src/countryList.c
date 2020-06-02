@@ -31,12 +31,10 @@ void emptycountryList(CountryList* cL)
 CountryList makeCountryList(char* countries)
 {
     CountryList cL = initcountryList();
-    // printf("Mesa einai %s\n", countries);
     char* tmp = strdup(countries);
     char* tok = strtok(tmp, " ");
     tok = strtok(NULL, " ");
     while(tok!=NULL){
-        // printf("tok %s\n", tok);
         addCountryListNode(&cL, tok);
         tok = strtok(NULL, " ");
     }
